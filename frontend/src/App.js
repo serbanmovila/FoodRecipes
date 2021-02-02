@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import AuthSceen from './Screens/Auth/AuthScreen'
+import IngredientsScreen from './Screens/Ingredients/IngredientsScreen'
+import RecipesScreen from './Screens/Recipes/RecipesScreen'
+import HomeScreen from './Screens/Home/HomeScreen'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Router>
+      <div className="App">
+        <nav>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+            <li>
+              <Link to="/ingredients">Ingredients</Link>
+            </li>
+            <li>
+              <Link to="/recipes">Recipes</Link>
+            </li>
+            <li>
+              <Link to="/auth">Auth</Link>
+            </li>
+          </ul>
+        </nav>
+
+        <Switch>
+          <Route path="/ingredients">
+            <IngredientsScreen />
+          </Route>
+          <Route path="/recipes">
+            <RecipesScreen />
+          </Route>
+          <Route path="/recipes">
+            <AuthSceen />
+          </Route>
+          <Route path="/">
+            <HomeScreen />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
+  )
 }
 
-export default App;
+export default App
