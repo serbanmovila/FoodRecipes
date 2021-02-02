@@ -4,27 +4,13 @@ import AuthSceen from './Screens/Auth/AuthScreen'
 import IngredientsScreen from './Screens/Ingredients/IngredientsScreen'
 import RecipesScreen from './Screens/Recipes/RecipesScreen'
 import HomeScreen from './Screens/Home/HomeScreen'
+import Navigation from './Helpers/Navigation/Navigation'
 
 function App() {
   return (
     <Router>
       <div className="App">
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/ingredients">Ingredients</Link>
-            </li>
-            <li>
-              <Link to="/recipes">Recipes</Link>
-            </li>
-            <li>
-              <Link to="/auth">Auth</Link>
-            </li>
-          </ul>
-        </nav>
+        <Navigation />
 
         <Switch>
           <Route path="/ingredients">
