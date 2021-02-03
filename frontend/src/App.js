@@ -19,7 +19,7 @@ function App() {
           <Route path="/recipes">
             <RecipesScreen />
           </Route>
-          <Route path="/recipes">
+          <Route path="/auth">
             <AuthSceen />
           </Route>
           <Route path="/">
