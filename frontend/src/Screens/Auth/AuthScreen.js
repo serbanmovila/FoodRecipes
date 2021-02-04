@@ -76,9 +76,16 @@ const Tabs = styled.div`
 
 const Tab = styled.div`
   width: 50%;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
 
   p {
     font-family: 'Source Sans Pro', sans-serif;
+  }
+
+  &.selected,
+  &:hover {
+    background: rgba(0, 0, 0, 0.1);
   }
 `
 
@@ -86,6 +93,7 @@ const Form = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px 40px;
 
   & > div {
     margin: 10px auto;
@@ -98,6 +106,7 @@ export default class AuthScreen extends React.Component {
 
     this.state = {
       modal: false,
+      formType: 'login',
     }
   }
 
@@ -105,8 +114,18 @@ export default class AuthScreen extends React.Component {
     this.setState({ modal: false })
   }
 
-  open = () => {
-    this.setState({ modal: true })
+  open = (type) => {
+    this.setState({ modal: true, formType: type })
+  }
+
+  switchTab = (e) => {
+    let n
+    if (this.state.formType === 'login') n = 'signup'
+    else n = 'login'
+
+    this.setState({
+      formType: n,
+    })
   }
 
   render() {
@@ -121,29 +140,65 @@ export default class AuthScreen extends React.Component {
                   style={{
                     borderRight: '1px solid rgba(0,0,0,0.3)',
                   }}
+                  className={this.state.formType === 'login' ? 'selected' : ''}
+                  onClick={this.switchTab}
                 >
                   <p>Log in</p>
                 </Tab>
-                <Tab>
+                <Tab
+                  onClick={this.switchTab}
+                  className={this.state.formType === 'signup' ? 'selected' : ''}
+                >
                   <p>Sign up</p>
                 </Tab>
               </Tabs>
               <Form>
-                <TextField
-                  id="outlined-basic"
-                  label="Email"
-                  variant="outlined"
-                />
-                <TextField
-                  id="outlined-basic"
-                  label="Password"
-                  variant="outlined"
-                />
-                <TextField
-                  id="outlined-basic"
-                  label="Confirm password"
-                  variant="outlined"
-                />
+                {this.state.formType === 'login' ? (
+                  <>
+                    <TextField
+                      id="outlined-basic"
+                      label="Email"
+                      variant="outlined"
+                    />
+                    <TextField
+                      id="outlined-basic"
+                      label="Password"
+                      variant="outlined"
+                    />
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      style={{ width: '100%', marginTop: '30px' }}
+                    >
+                      Log in
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <TextField
+                      id="outlined-basic"
+                      label="Email"
+                      variant="outlined"
+                    />
+                    <TextField
+                      id="outlined-basic"
+                      label="Password"
+                      variant="outlined"
+                    />
+                    <TextField
+                      id="outlined-basic"
+                      label="Confirm password"
+                      variant="outlined"
+                    />
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      style={{ width: '100%', marginTop: '30px' }}
+                    >
+                      Sign up
+                    </Button>
+                  </>
+                )}
               </Form>
             </Modal>
           )}
@@ -170,7 +225,9 @@ export default class AuthScreen extends React.Component {
               marginTop: '7%',
             }}
             size="large"
-            onClick={open}
+            onClick={() => {
+              open('login')
+            }}
           >
             Sign up
           </Button>

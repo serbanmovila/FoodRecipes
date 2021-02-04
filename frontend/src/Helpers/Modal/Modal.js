@@ -18,8 +18,8 @@ const ModalContainer = styled.div`
 
 const Inner = styled.div`
   max-width: 600px;
-  width: 90%;
-  height: 600px;
+  width: auto;
+  height: auto;
   background: white;
   border-radius: 8px;
   display: flex;
