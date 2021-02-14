@@ -1,5 +1,6 @@
 import React from 'react'
 import Modal from './../../Helpers/Modal/Modal'
+import Header from './../../Helpers/Header/Header'
 import styled from 'styled-components'
 import bg from './../../assets/images/lp-bg.jpg'
 import { constants as c } from './../../Helpers/Constants'
@@ -118,121 +119,124 @@ export default class AuthScreen extends React.Component {
     this.setState({ modal: true, formType: type })
   }
 
-  switchTab = (e) => {
-    let n
-    if (this.state.formType === 'login') n = 'signup'
-    else n = 'login'
-
+  switchTab = () => {
     this.setState({
-      formType: n,
+      formType: this.state.formType === 'login' ? 'signup' : 'login',
     })
   }
 
   render() {
     const { close, open } = this
     return (
-      <Container>
-        <InnerContainer>
-          {this.state.modal && (
-            <Modal close={close}>
-              <Tabs>
-                <Tab
-                  style={{
-                    borderRight: '1px solid rgba(0,0,0,0.3)',
-                  }}
-                  className={this.state.formType === 'login' ? 'selected' : ''}
-                  onClick={this.switchTab}
-                >
-                  <p>Log in</p>
-                </Tab>
-                <Tab
-                  onClick={this.switchTab}
-                  className={this.state.formType === 'signup' ? 'selected' : ''}
-                >
-                  <p>Sign up</p>
-                </Tab>
-              </Tabs>
-              <Form>
-                {this.state.formType === 'login' ? (
-                  <>
-                    <TextField
-                      id="outlined-basic"
-                      label="Email"
-                      variant="outlined"
-                    />
-                    <TextField
-                      id="outlined-basic"
-                      label="Password"
-                      variant="outlined"
-                    />
-                    <Button
-                      variant="outlined"
-                      size="large"
-                      style={{ width: '100%', marginTop: '30px' }}
-                    >
-                      Log in
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <TextField
-                      id="outlined-basic"
-                      label="Email"
-                      variant="outlined"
-                    />
-                    <TextField
-                      id="outlined-basic"
-                      label="Password"
-                      variant="outlined"
-                    />
-                    <TextField
-                      id="outlined-basic"
-                      label="Confirm password"
-                      variant="outlined"
-                    />
-                    <Button
-                      variant="outlined"
-                      size="large"
-                      style={{ width: '100%', marginTop: '30px' }}
-                    >
-                      Sign up
-                    </Button>
-                  </>
-                )}
-              </Form>
-            </Modal>
-          )}
-          <ContentContainer>
-            <Content>
-              <Box>
-                <Kitchen />
-                <h3>Keep track of your ingredients</h3>
-              </Box>
-              <Box>
-                <MenuBook />
-                <h3>Keep track of your recipes</h3>
-              </Box>
-              <Box>
-                <Fastfood />
-                <h3>Get recipe recommendations based on what you like</h3>
-              </Box>
-            </Content>
-          </ContentContainer>
-          <Button
-            variant="contained"
-            style={{
-              color: 'black',
-              marginTop: '7%',
-            }}
-            size="large"
-            onClick={() => {
-              open('login')
-            }}
-          >
-            Sign up
-          </Button>
-        </InnerContainer>
-      </Container>
+      <>
+        <Header openModal={open} />
+        <Container>
+          <InnerContainer>
+            {this.state.modal && (
+              <Modal close={close}>
+                <Tabs>
+                  <Tab
+                    style={{
+                      borderRight: '1px solid rgba(0,0,0,0.3)',
+                    }}
+                    className={
+                      this.state.formType === 'login' ? 'selected' : ''
+                    }
+                    onClick={this.switchTab}
+                  >
+                    <p>Log in</p>
+                  </Tab>
+                  <Tab
+                    onClick={this.switchTab}
+                    className={
+                      this.state.formType === 'signup' ? 'selected' : ''
+                    }
+                  >
+                    <p>Sign up</p>
+                  </Tab>
+                </Tabs>
+                <Form>
+                  {this.state.formType === 'login' ? (
+                    <>
+                      <TextField
+                        id="outlined-basic"
+                        label="Email"
+                        variant="outlined"
+                      />
+                      <TextField
+                        id="outlined-basic"
+                        label="Password"
+                        variant="outlined"
+                      />
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        style={{ width: '100%', marginTop: '30px' }}
+                      >
+                        Log in
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <TextField
+                        id="outlined-basic"
+                        label="Email"
+                        variant="outlined"
+                      />
+                      <TextField
+                        id="outlined-basic"
+                        label="Password"
+                        variant="outlined"
+                      />
+                      <TextField
+                        id="outlined-basic"
+                        label="Confirm password"
+                        variant="outlined"
+                      />
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        style={{ width: '100%', marginTop: '30px' }}
+                      >
+                        Sign up
+                      </Button>
+                    </>
+                  )}
+                </Form>
+              </Modal>
+            )}
+            <ContentContainer>
+              <Content>
+                <Box>
+                  <Kitchen />
+                  <h3>Keep track of your ingredients</h3>
+                </Box>
+                <Box>
+                  <MenuBook />
+                  <h3>Keep track of your recipes</h3>
+                </Box>
+                <Box>
+                  <Fastfood />
+                  <h3>Get recipe recommendations based on what you like</h3>
+                </Box>
+              </Content>
+            </ContentContainer>
+            <Button
+              variant="contained"
+              style={{
+                color: 'black',
+                marginTop: '7%',
+              }}
+              size="large"
+              onClick={() => {
+                open('login')
+              }}
+            >
+              Sign up
+            </Button>
+          </InnerContainer>
+        </Container>
+      </>
     )
   }
 }

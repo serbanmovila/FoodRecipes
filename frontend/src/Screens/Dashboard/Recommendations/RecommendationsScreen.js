@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default class IngredientsScreen extends React.Component {
+export default class RecommendationsScreen extends React.Component {
   constructor(props) {
     super(props)
 
@@ -8,6 +8,6 @@ export default class IngredientsScreen extends React.Component {
   }
 
   render() {
-    return <h3>Ingredients Page</h3>
+    return <h3>Recommendations</h3>
   }
 }

@@ -1,29 +1,23 @@
 import './App.css'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
-import AuthSceen from './Screens/Auth/AuthScreen'
-import IngredientsScreen from './Screens/Ingredients/IngredientsScreen'
-import RecipesScreen from './Screens/Recipes/RecipesScreen'
-import HomeScreen from './Screens/Home/HomeScreen'
-import Navigation from './Helpers/Navigation/Navigation'
+import AppNavigator from './Screens/AppNavigator/AppNavigator'
 
 function App() {
   return (
     <Router>
       <div className="App">
-        <Navigation />
-
         <Switch>
           <Route path="/ingredients">
-            <IngredientsScreen />
+            <AppNavigator screen="ingredients" />
           </Route>
           <Route path="/recipes">
-            <RecipesScreen />
+            <AppNavigator screen="recipes" />
           </Route>
-          <Route path="/auth">
-            <AuthSceen />
+          <Route path="/recommendations">
+            <AppNavigator screen="recommendations" />
           </Route>
           <Route path="/">
-            <HomeScreen />
+            <AppNavigator />
           </Route>
         </Switch>
       </div>
