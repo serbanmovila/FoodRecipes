@@ -19,7 +19,7 @@ exports.DatabaseHandler = ()=>{
         },
 
         insertObject:async (toInsert)=>{
-            return await collection.insertOne(toInsert) ? {status:"Recipe inserted!"} : {status:"Recipe was not inserted!"};
+            return await collection.insertOne(toInsert) ? {status:"Element inserted!"} : {status:"Element was not inserted!"};
         },
 
         insertArray:async (toInsert)=>{
@@ -66,6 +66,24 @@ exports.DatabaseHandler = ()=>{
         
         updateAt:async (where,upFields)=>{
             return (await collection.updateOne(where,{$set:upFields})).result;
+        },
+
+        checkIfUserExist:async (userName,passWord) => {
+            let users = await collection.find().toArray();
+            for(let user of users){
+                if(user.username.trim() === userName.trim() && user.password.trim() === passWord.trim()){
+                    return true;
+                }
+            }
+            return false;
+        },
+
+        addIngredient:async (token,ingredient) => {
+            let user = await collection.findOne({token:token});
+            let ingredients = user.ingredients;
+            ingredients.push(ingredient);
+            console.log(ingredients);
+            await collection.updateOne({token:token},{$set:{ingredients:ingredients}});
         }
     }
 }
