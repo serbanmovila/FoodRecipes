@@ -3,14 +3,19 @@ const bodyParser = require("body-parser");
 const { DatabaseHandler } = require("./databaseManager");
 const app = express();
 const port = 3000;
+const jwt = require('njwt');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const secretKey = "secret-phrase-for-encryption-and-decryption";
+
 
 const dbName = "RecipesDB";
 
 //this block will be deleted in further iterations
 const dbManager = DatabaseHandler();
+
+
 
 app.get("/recipes/all", async (req, res) => {
   await dbManager.setUpConnection(dbName);
@@ -71,9 +76,8 @@ app.post("/login", async (req, res) => {
   let usr = req.body.username;
   let psd = req.body.password;
   if ((await dbManager.checkIfUserExist(usr,psd)) === true) {
-    const jwt = require("njwt");
     const claims = { iss: "login-claim", sub: "user-login" };
-    const token = jwt.create(claims, psd);
+    const token = jwt.create(claims, secretKey);
     token.setExpiration(new Date().getTime() + 60 * 1000);
     let jwtToken = token.compact();
     await dbManager.updateAt({username:usr,password:psd},{token:jwtToken});
@@ -87,9 +91,9 @@ app.post("/login", async (req, res) => {
 app.post("/ingredients/add", async (req, res) => {
   await dbManager.setUpConnection(dbName);
   await dbManager.setCollection("Users");
-  const jwt = require('njwt');
-  const { token,password,ingredient } = req.body;
-  jwt.verify(token,password,async (err,ver)=>{
+  let token = req.headers['authorization'].split(' ')[1];
+  const { ingredient } = req.body;
+  jwt.verify(token,secretKey,async (err,ver)=>{
     if(err){
       res.status(405).send({ans:'expired'});
     }else{
@@ -98,6 +102,59 @@ app.post("/ingredients/add", async (req, res) => {
     }
   });
 
+});
+
+app.get("/ingredients",async (req,res)=>{
+  await dbManager.setUpConnection(dbName);
+  await dbManager.setCollection("Users");
+  const token = req.headers['authorization'].split(' ')[1];
+  jwt.verify(token,secretKey,async (err,ver)=>{
+    if(err){
+      res.status(405).send({ans:'expired'});
+    }else{
+      res.send(await dbManager.getIngredients(token));
+    }
+  });
+});
+
+app.get("/ingredients/:id",async (req,res)=>{
+  await dbManager.setUpConnection(dbName);
+  await dbManager.setUpConnection('Users');
+  const token = req.headers['authorization'].split(' ')[1];
+  let {id} = req.params;
+  jwet.verify(token,secretKey,async (err,ver)=>{
+    if(err){
+      res.status(405).send({ans:'expired'});
+    }else{
+      res.send(await dbManager.getIngredient(token,id-1));
+    }
+  });
+})
+
+app.put(`/ingredients/:id`,async (req,res)=>{
+  let {id} = req.params();
+  let token = req.headers['authorization'].split(' ')[1];
+  jwt.verify(token,secretKey,async (err,ver)=>{
+    if(err){
+      res.status(405).send({ans:'expired'});
+    }else{
+      await dbManager.updateIngredient(token,id,req.body);
+      res.send({result:'updated'});
+    }
+  });
+});
+
+app.delete('/ingredients/:id',async (req,res)=>{
+  let {id} = req.params;
+  let token = req.headers['authorization'].split(' ')[1];
+  jwt.verify(token,secretKey,async (err,ver)=>{
+    if(err){
+      res.status(405).send({ans:'expired'});
+    }else{
+      await dbManager.deleteIngredient(token,id);
+      res.send({result:'deleted'});
+    }
+  });
 });
 
 app.listen(port, () => {
