@@ -3,33 +3,31 @@ const bodyParser = require("body-parser");
 const { DatabaseHandler } = require("./databaseManager");
 const app = express();
 const port = 3000;
-const jwt = require('njwt');
+const jwt = require("njwt");
+const ObjectId = require("mongodb").ObjectId;
+const { ObjectID } = require("bson");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const secretKey = "secret-phrase-for-encryption-and-decryption";
-
 
 const dbName = "RecipesDB";
 
 //this block will be deleted in further iterations
 const dbManager = DatabaseHandler();
 
-
-
-app.get("/recipes/all", async (req, res) => {
+app.get("/recipes", async (req, res) => {
   await dbManager.setUpConnection(dbName);
   await dbManager.setCollection("Recipes");
   let response = await dbManager.queryAll({});
   res.send(
     response.map((recipe) => {
-      let { _id, ...recipeView } = recipe;
-      return recipeView;
+      return recipe;
     })
   );
 });
 
-app.get("/recipes/recipe", async (req, res) => {
+app.get("/recipes", async (req, res) => {
   await dbManager.setUpConnection(dbName);
   await dbManager.setCollection("Recipes");
   let uriString = req.query.ingredients.split(";");
@@ -43,22 +41,60 @@ app.get("/recipes/recipe", async (req, res) => {
   let request = {
     ingredients: uriString.map((ingredient) => ingredient.trim()),
   };
-  console.log(reqObject, request);
   let response = await dbManager.recipesQueryBy(reqObject, request);
   res.send(
     response.map((recipe) => {
-      let { _id, ...recipeView } = recipe;
-      return recipeView;
+      return recipe;
     })
   );
 });
 
-app.post("/recipes/add", async (req, res) => {
+app.get("/recipes/:id", async (req, res) => {
   await dbManager.setUpConnection(dbName);
   await dbManager.setCollection("Recipes");
-  req.body.ingredients.sort();
-  let response = await dbManager.insertObject(req.body);
-  res.send(response);
+  res.send(await dbManager.query({ _id: ObjectID(req.params.id) }));
+});
+
+app.put("/recipes/:id", async (req, res) => {
+  await dbManager.setUpConnection(dbName);
+  await dbManager.setCollection("Recipes");
+  res.send(
+    await dbManager.updateAt({ _id: ObjectID(req.params.id) }, req.body)
+  );
+});
+
+app.delete("/recipes/:id", async (req,res)=>{
+  await dbManager.setUpConnection(dbName);
+  await dbManager.setCollection("Recipes");
+  res.send(
+    await dbManager.remove({_id:ObjectID(req.params.id)})
+  );
+});
+
+app.get("/myRecipes", async (req, res) => {
+  await dbManager.setUpConnection(dbName);
+  await dbManager.setCollection("Users");
+  let token = req.headers["authorization"].split(" ")[1];
+  let usr = await dbManager.getUser(token);
+  res.send(await dbManager.getUserRecipes(usr));
+});
+
+app.post("/recipes", async (req, res) => {
+  let token = req.headers["authorization"].split(" ")[1];
+  jwt.verify(token, secretKey, async (err, ver) => {
+    if (err) {
+      res.status(405).send({ ans: "expired" });
+    } else {
+      await dbManager.setUpConnection(dbName);
+      await dbManager.setCollection("Users");
+      let usr = await dbManager.getUser(token);
+      await dbManager.setCollection("Recipes");
+      req.body.ingredients.sort();
+      req.body.authorId = usr._id;
+      let response = await dbManager.insertObject(req.body);
+      res.status(200).send(response);
+    }
+  });
 });
 
 app.post("/register", async (req, res) => {
@@ -67,7 +103,6 @@ app.post("/register", async (req, res) => {
   let data = req.body;
   data.ingredients = [];
   res.send(await dbManager.insertObject(data));
-  // res.send("All good!");
 });
 
 app.post("/login", async (req, res) => {
@@ -75,84 +110,85 @@ app.post("/login", async (req, res) => {
   await dbManager.setCollection("Users");
   let usr = req.body.username;
   let psd = req.body.password;
-  if ((await dbManager.checkIfUserExist(usr,psd)) === true) {
+  if ((await dbManager.checkIfUserExist(usr, psd)) === true) {
     const claims = { iss: "login-claim", sub: "user-login" };
     const token = jwt.create(claims, secretKey);
-    token.setExpiration(new Date().getTime() + 60 * 1000);
+    token.setExpiration(new Date().getTime() + 1200 * 1000);
     let jwtToken = token.compact();
-    await dbManager.updateAt({username:usr,password:psd},{token:jwtToken});
-    res.send({token:jwtToken});
-  }
-  else{
-    res.status(404).send('User not found!');
+    await dbManager.updateAt(
+      { username: usr, password: psd },
+      { token: jwtToken }
+    );
+    res.send({ token: jwtToken });
+  } else {
+    res.status(404).send("User not found!");
   }
 });
 
-app.post("/ingredients/add", async (req, res) => {
+app.post("/ingredients", async (req, res) => {
   await dbManager.setUpConnection(dbName);
   await dbManager.setCollection("Users");
-  let token = req.headers['authorization'].split(' ')[1];
+  let token = req.headers["authorization"].split(" ")[1];
   const { ingredient } = req.body;
-  jwt.verify(token,secretKey,async (err,ver)=>{
-    if(err){
-      res.status(405).send({ans:'expired'});
-    }else{
-      await dbManager.addIngredient(token,ingredient);
-      res.status(200).send({ans:'added'});
+  jwt.verify(token, secretKey, async (err, ver) => {
+    if (err) {
+      res.status(405).send({ ans: "expired" });
+    } else {
+      await dbManager.addIngredient(token, ingredient);
+      res.status(200).send({ ans: "added" });
     }
   });
-
 });
 
-app.get("/ingredients",async (req,res)=>{
+app.get("/ingredients", async (req, res) => {
   await dbManager.setUpConnection(dbName);
   await dbManager.setCollection("Users");
-  const token = req.headers['authorization'].split(' ')[1];
-  jwt.verify(token,secretKey,async (err,ver)=>{
-    if(err){
-      res.status(405).send({ans:'expired'});
-    }else{
+  const token = req.headers["authorization"].split(" ")[1];
+  jwt.verify(token, secretKey, async (err, ver) => {
+    if (err) {
+      res.status(405).send({ ans: "expired" });
+    } else {
       res.send(await dbManager.getIngredients(token));
     }
   });
 });
 
-app.get("/ingredients/:id",async (req,res)=>{
+app.get("/ingredients/:id", async (req, res) => {
   await dbManager.setUpConnection(dbName);
-  await dbManager.setUpConnection('Users');
-  const token = req.headers['authorization'].split(' ')[1];
-  let {id} = req.params;
-  jwet.verify(token,secretKey,async (err,ver)=>{
-    if(err){
-      res.status(405).send({ans:'expired'});
-    }else{
-      res.send(await dbManager.getIngredient(token,id-1));
-    }
-  });
-})
-
-app.put(`/ingredients/:id`,async (req,res)=>{
-  let {id} = req.params();
-  let token = req.headers['authorization'].split(' ')[1];
-  jwt.verify(token,secretKey,async (err,ver)=>{
-    if(err){
-      res.status(405).send({ans:'expired'});
-    }else{
-      await dbManager.updateIngredient(token,id,req.body);
-      res.send({result:'updated'});
+  await dbManager.setUpConnection("Users");
+  const token = req.headers["authorization"].split(" ")[1];
+  let { id } = req.params;
+  jwt.verify(token, secretKey, async (err, ver) => {
+    if (err) {
+      res.status(405).send({ ans: "expired" });
+    } else {
+      res.send(await dbManager.getIngredient(token, id - 1));
     }
   });
 });
 
-app.delete('/ingredients/:id',async (req,res)=>{
-  let {id} = req.params;
-  let token = req.headers['authorization'].split(' ')[1];
-  jwt.verify(token,secretKey,async (err,ver)=>{
-    if(err){
-      res.status(405).send({ans:'expired'});
-    }else{
-      await dbManager.deleteIngredient(token,id);
-      res.send({result:'deleted'});
+app.put(`/ingredients/:id`, async (req, res) => {
+  let { id } = req.params;
+  let token = req.headers["authorization"].split(" ")[1];
+  jwt.verify(token, secretKey, async (err, ver) => {
+    if (err) {
+      res.status(405).send({ ans: "expired" });
+    } else {
+      await dbManager.updateIngredient(token, id, req.body);
+      res.send({ result: "updated" });
+    }
+  });
+});
+
+app.delete("/ingredients/:id", async (req, res) => {
+  let { id } = req.params;
+  let token = req.headers["authorization"].split(" ")[1];
+  jwt.verify(token, secretKey, async (err, ver) => {
+    if (err) {
+      res.status(405).send({ ans: "expired" });
+    } else {
+      await dbManager.deleteIngredient(token, id);
+      res.send({ result: "deleted" });
     }
   });
 });
