@@ -1,132 +1,147 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Link } from 'react-router-dom'
-import { constants as c } from '../Constants'
+import { Menu } from '@material-ui/icons'
+import Button from '@material-ui/core/Button'
+import img1 from '../../assets/images/1.jpg'
+import img2 from '../../assets/images/2.jpg'
+import img3 from '../../assets/images/3.jpg'
+import img4 from '../../assets/images/4.jpg'
+import img5 from '../../assets/images/5.jpg'
+import img6 from '../../assets/images/6.jpg'
+import img7 from '../../assets/images/7.jpg'
 
-const Nav = styled.nav`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  position: fixed;
-  width: 100%;
-  left: 0;
-  height: ${c.navHeight}px;
-  top: 0;
-  z-index: 2;
-`
-
-const List = styled.ul`
-  display: flex;
-  flex-direction: row;
-`
-
-const Element = styled.li`
-  display: flex;
-  justify-content: center;
+const NavContainer = styled.div`
+  max-width: 300px;
+  min-width: 250px;
+  width: 20%;
+  height: 100vh;
   align-items: center;
+  background: white;
+  -webkit-box-shadow: -3px -1px 6px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: -3px -1px 6px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: -3px -1px 6px 0px rgba(0, 0, 0, 0.75);
+  z-index: 2;
+  background-size: cover;
+  background-position: center;
+`
 
-  a {
-    text-decoration: none;
-    font-weight: 500;
-    height: 100%;
+const NavBgOverlay = styled.div`
+  height: 100%;
+  width: 100%;
+  background: rgb(55, 59, 96, 0.76);
+  display: flex;
+  flex-direction: column;
+`
+
+const Nav = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`
+
+const List = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  button {
+    border-radius: 0px;
+    padding: 4% 0;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: none;
     letter-spacing: 1px;
-    margin: 0 10px;
-    color: white;
-    position: relative;
-    opacity: 0.8;
-    font-family: 'Source Sans Pro', sans-serif;
-    transition: opacity 0.3s ease-in-out;
 
-    &::after {
-      content: '';
-      height: 2px;
-      background: white;
-      display: block;
-      width: 0;
-      position: absolute;
-      left: 0;
-      top: 120%;
-      transition: width 0.4s ease-in-out;
+    span {
+      text-align: left;
+      padding-left: 10%;
+      display: flex;
+      justify-content: flex-start;
     }
 
-    &:hover {
-      opacity: 1;
-      transition: opacity 0.3s ease-in-out;
+    :not(:first-child) {
+      border-top: 1px solid rgba(0, 0, 0, 0.2);
+    }
 
-      &::after {
-        width: 100%;
-      }
+    &.active {
+      background: rgba(0, 0, 0, 0.3);
     }
   }
+`
+
+const NavHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `
 
 const Logo = styled.h1`
   font-family: 'Libre Baskerville', serif;
   font-style: italic;
   color: white;
+  font-size: 130%;
   letter-spacing: 2px;
-  opacity: 0.8;
   cursor: pointer;
   transition: opacity 0.3s ease-in-out;
-
-  &:hover {
-    opacity: 1;
-  }
+  margin-left: 10%;
 `
 
-const NavInner = styled.div`
-  width: 90%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+const MenuBtn = styled.span`
+  display: none;
+  cursor: pointer;
 `
 
 export default class Navigation extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      type: 'nonauth',
-    }
+    this.state = {}
   }
 
   render() {
+    const { screen } = this.props
+
+    let bg,
+      bgs = [img1, img2, img3, img4, img5, img6, img7]
+
+    bg = bgs[Math.floor(Math.random() * 7)]
+
     return (
-      <Nav>
-        <NavInner>
-          <Logo>FoodRecipes</Logo>
-          <List>
-            {this.state.type === 'complete' && (
-              <>
-                <Element>
-                  <Link to="/">Home</Link>
-                </Element>
-                <Element>
-                  <Link to="/ingredients">Ingredients</Link>
-                </Element>
-                <Element>
-                  <Link to="/recipes">Recipes</Link>
-                </Element>
-                <Element>
-                  <Link to="/auth">Auth</Link>
-                </Element>
-              </>
-            )}
-            {this.state.type === 'nonauth' && (
-              <>
-                <Element>
-                  <a href="javascript:void(0)">Login</a>
-                </Element>
-                <Element>
-                  <a href="javascript:void(0)">Register</a>
-                </Element>
-              </>
-            )}
-          </List>
-        </NavInner>
-      </Nav>
+      <NavContainer
+        style={{
+          backgroundImage: `url(${bg})`,
+        }}
+      >
+        <NavBgOverlay>
+          <NavHeader>
+            <Logo>FoodRecipes</Logo>
+            <MenuBtn>
+              <Menu />
+            </MenuBtn>
+          </NavHeader>
+          <Nav>
+            <List>
+              <Button
+                className={screen === 'ingredients' ? 'active' : ''}
+                onClick={() => this.props.switchScreen('ingredients')}
+              >
+                Ingredients
+              </Button>
+              <Button
+                className={screen === 'recipes' ? 'active' : ''}
+                onClick={() => this.props.switchScreen('recipes')}
+              >
+                Recipes
+              </Button>
+              <Button
+                className={screen === 'recommendations' ? 'active' : ''}
+                onClick={() => this.props.switchScreen('recommendations')}
+              >
+                Get recommendation
+              </Button>
+            </List>
+          </Nav>
+        </NavBgOverlay>
+      </NavContainer>
     )
   }
 }
