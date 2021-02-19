@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { Menu } from '@material-ui/icons'
-import Button from '@material-ui/core/Button'
+import {Button, IconButton} from '@material-ui/core/'
 import img1 from '../../assets/images/1.jpg'
 import img2 from '../../assets/images/2.jpg'
 import img3 from '../../assets/images/3.jpg'
@@ -20,9 +20,17 @@ const NavContainer = styled.div`
   -webkit-box-shadow: -3px -1px 6px 0px rgba(0, 0, 0, 0.75);
   -moz-box-shadow: -3px -1px 6px 0px rgba(0, 0, 0, 0.75);
   box-shadow: -3px -1px 6px 0px rgba(0, 0, 0, 0.75);
-  z-index: 2;
+  z-index: 3;
   background-size: cover;
   background-position: center;
+
+  @media (max-width: 600px) {
+    height: 100%;
+    position: fixed;
+    width: 250px;
+    top: 0;
+    transition: left 0.2s ease-in-out;
+  }
 `
 
 const NavBgOverlay = styled.div`
@@ -37,6 +45,14 @@ const Nav = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+
+  @media (max-width: 600px) {
+    height: 100%;
+    width: 250px;
+    top: 0;
+    left: -250px;
+    transition: left 0.2s ease-in-out;
+  }
 `
 
 const List = styled.div`
@@ -70,8 +86,28 @@ const List = styled.div`
 
 const NavHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
+`
+
+const MobileNavHeader = styled.div`
+  display: none;
+  
+  @media (max-width: 600px) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background-color: #efeff7;
+  }
 `
 
 const Logo = styled.h1`
@@ -83,18 +119,45 @@ const Logo = styled.h1`
   cursor: pointer;
   transition: opacity 0.3s ease-in-out;
   margin-left: 10%;
+
+  @media (max-width: 600px) {
+    color: rgba(0,0,0,0.8);
+    margin: auto 0;
+  }
 `
 
 const MenuBtn = styled.span`
-  display: none;
   cursor: pointer;
+`
+
+const Mask = styled.div`
+  background-color: rgba(0,0,0,0.5);
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
 `
 
 export default class Navigation extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {}
+    this.state = {
+      mobileNavState: "-250px"
+    }
+  }
+
+  switchNav = () => {
+    if (this.state.mobileNavState === "-250px") {
+      this.setState({
+        mobileNavState: "0px"
+      })
+    }
+    else {
+      this.setState({
+        mobileNavState: "-250px"
+      })
+    }
   }
 
   render() {
@@ -106,17 +169,21 @@ export default class Navigation extends React.Component {
     bg = bgs[Math.floor(Math.random() * 7)]
 
     return (
+      <>
+      {this.state.mobileNavState === "0px" && <Mask onClick={this.switchNav}/>}
+      <MobileNavHeader>
+        <Logo>FoodRecipes</Logo>
+        <IconButton onClick={this.switchNav}><Menu/></IconButton>
+      </MobileNavHeader>
       <NavContainer
         style={{
           backgroundImage: `url(${bg})`,
+          left: this.state.mobileNavState
         }}
       >
         <NavBgOverlay>
           <NavHeader>
             <Logo>FoodRecipes</Logo>
-            <MenuBtn>
-              <Menu />
-            </MenuBtn>
           </NavHeader>
           <Nav>
             <List>
@@ -142,6 +209,7 @@ export default class Navigation extends React.Component {
           </Nav>
         </NavBgOverlay>
       </NavContainer>
+      </>
     )
   }
 }

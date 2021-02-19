@@ -1,11 +1,10 @@
 import React from 'react'
-import Modal from './../../Helpers/Modal/Modal'
 import Header from './../../Helpers/Header/Header'
 import styled from 'styled-components'
 import bg from './../../assets/images/lp-bg.jpg'
 import { constants as c } from './../../Helpers/Constants'
 import { Kitchen, MenuBook, Fastfood } from '@material-ui/icons'
-import { Button, TextField } from '@material-ui/core'
+import { Button, TextField, Modal } from '@material-ui/core'
 
 const Container = styled.div`
   width: 100%;
