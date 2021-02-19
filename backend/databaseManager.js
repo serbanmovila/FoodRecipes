@@ -33,7 +33,7 @@ exports.DatabaseHandler = () => {
     },
 
     query: async (obj) => {
-      return collection.findOne(obj);
+      return await collection.findOne(obj);
     },
 
     recipesQueryBy: async (reqObj, obj) => {
@@ -81,6 +81,12 @@ exports.DatabaseHandler = () => {
         }
       }
       return false;
+    },
+
+    getUser: async(token)=>{
+      console.log(token);
+      let user = await collection.findOne({token:token});
+      return user;
     },
 
     addIngredient: async (token, ingredient) => {
@@ -133,5 +139,13 @@ exports.DatabaseHandler = () => {
         return { };
       }
     },
+
+    getUserRecipes: async (userObject) => {
+      collection = await db.collection('Recipes');
+      let recipes = await collection.find({authorId:userObject._id}).toArray();
+      return recipes;
+    }
+
+
   };
 };
