@@ -4,7 +4,7 @@ const { DatabaseHandler } = require("./databaseManager");
 const app = express();
 const port = 3000;
 const jwt = require("njwt");
-const cors = require('cors');
+const cors = require("cors");
 const ObjectId = require("mongodb").ObjectId;
 const { ObjectID } = require("bson");
 
@@ -64,12 +64,10 @@ app.put("/recipes/:id", async (req, res) => {
   );
 });
 
-app.delete("/recipes/:id", async (req,res)=>{
+app.delete("/recipes/:id", async (req, res) => {
   await dbManager.setUpConnection(dbName);
   await dbManager.setCollection("Recipes");
-  res.send(
-    await dbManager.remove({_id:ObjectID(req.params.id)})
-  );
+  res.send(await dbManager.remove({ _id: ObjectID(req.params.id) }));
 });
 
 app.get("/myRecipes", async (req, res) => {
@@ -94,6 +92,39 @@ app.post("/recipes", async (req, res) => {
       req.body.authorId = usr._id;
       let response = await dbManager.insertObject(req.body);
       res.status(200).send(response);
+    }
+  });
+});
+
+app.post("/addrecipes", async (req, res) => {
+  let token = req.headers["authorization"].split(" ")[1];
+  jwt.verify(token, secretKey, async (err, ver) => {
+    if (err) {
+      res.status(405).send({ ans: "expired" });
+    } else {
+      await dbManager.setUpConnection(dbName);
+      await dbManager.setCollection("Users");
+      let usr = await dbManager.getUser(token);
+      await dbManager.setCollection("Recipes");
+      for(let i=0;i<req.body.data.length;i++){
+        req.body.data[i].authorId = usr._id;
+      }
+      let response = await dbManager.insertArray(req.body.data); 
+      res.status(200).send(response);
+    }
+  });
+});
+
+app.get("/recipesFilter/:tipPreparat", async (req,res)=>{
+  let token = req.headers["authorization"].split(" ")[1];
+  jwt.verify(token, secretKey, async (err, ver) => {
+    if (err) {
+      res.status(405).send({ ans: "expired" });
+    } else {
+      await dbManager.setUpConnection(dbName);
+      await dbManager.setCollection("Recipes");
+      let response = await dbManager.queryAll({});
+      res.send(response.filter(el => el.tipPreparat.trim() === req.params.tipPreparat.trim()));
     }
   });
 });
@@ -194,7 +225,7 @@ app.delete("/ingredients/:id", async (req, res) => {
   });
 });
 
-app.options('*',cors());
+app.options("*", cors());
 
 app.listen(port, () => {
   console.log(`Example app listening at https://localhost:${port}`);

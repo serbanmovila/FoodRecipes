@@ -5,7 +5,8 @@ export const register = (data) => (dispatch) => {
     dispatch({ type: 'test' })
     axios({
         method: 'post',
-        url: 'localhost:3001/register',
+        mode:'no-cors',
+        url: 'localhost:3000/register',
         data: {
             username: data.username,
             password: data.password,
