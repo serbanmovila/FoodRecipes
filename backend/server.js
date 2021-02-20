@@ -4,6 +4,7 @@ const { DatabaseHandler } = require("./databaseManager");
 const app = express();
 const port = 3000;
 const jwt = require("njwt");
+const cors = require('cors');
 const ObjectId = require("mongodb").ObjectId;
 const { ObjectID } = require("bson");
 
@@ -192,6 +193,8 @@ app.delete("/ingredients/:id", async (req, res) => {
     }
   });
 });
+
+app.options('*',cors());
 
 app.listen(port, () => {
   console.log(`Example app listening at https://localhost:${port}`);
