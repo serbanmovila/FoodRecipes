@@ -6,6 +6,21 @@ import Reducer from './Reducer'
 import { applyMiddleware, createStore } from 'redux'
 import { Provider } from 'react-redux'
 import thunk from 'redux-thunk'
+import axios from 'axios'
+
+// Add a request interceptor
+axios.interceptors.request.use(
+    (request) => {
+        request.headers.common['Authorization'] =
+            'Bearer ' + localStorage.getItem('token')
+        request.headers['Authorization'] =
+            'Bearer ' + localStorage.getItem('token')
+        return request
+    },
+    (error) => {
+        return Promise.reject(error)
+    }
+)
 
 let store = createStore(Reducer, applyMiddleware(thunk))
 

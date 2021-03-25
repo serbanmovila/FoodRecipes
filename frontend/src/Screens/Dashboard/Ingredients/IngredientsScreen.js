@@ -8,6 +8,11 @@ import AddCircleIcon from '@material-ui/icons/AddCircle'
 import { Container, Header, HeaderContent } from '../CommonStyledComponents'
 import AddIngredientForm from './Components/AddIngredientForm'
 import { connect } from 'react-redux'
+import {
+    getIngredients,
+    deleteIngredient,
+    updateIngredient
+} from './Controllers/IngredientsActions'
 
 const IngredientsList = styled.div`
     display: flex;
@@ -53,25 +58,32 @@ class IngredientsScreen extends React.Component {
         super(props)
 
         this.state = {
-            openModal: false,
+            openModal: false
         }
     }
 
     close = () => {
         this.setState({
-            openModal: false,
+            openModal: false
         })
     }
 
     open = () => {
         this.setState({
-            openModal: true,
+            openModal: true
         })
+    }
+
+    deleteIngredient = (id) => {
+        this.props.deleteIngredient(id, this.props.getIngredients)
+    }
+
+    componentDidMount() {
+        this.props.getIngredients()
     }
 
     render() {
         const { ingredients } = this.props
-        console.log(this.props)
         return (
             <>
                 <Container>
@@ -91,13 +103,18 @@ class IngredientsScreen extends React.Component {
                         <TableHeader />
                         <IngredientsList>
                             {ingredients.map((ingredient) => {
-                                return <Ingredient data={ingredient} />
+                                return (
+                                    <Ingredient
+                                        data={ingredient}
+                                        deleteIngredient={this.deleteIngredient}
+                                    />
+                                )
                             })}
                         </IngredientsList>
                     </TableContainer>
                 </Container>
                 <Modal close={this.close} open={this.state.openModal}>
-                    <AddIngredientForm />
+                    <AddIngredientForm close={this.close} />
                 </Modal>
             </>
         )
@@ -107,6 +124,7 @@ class IngredientsScreen extends React.Component {
 export default connect(
     (state) => ({
         ingredients: state.ingredients,
+        token: state.token
     }),
-    {}
+    { getIngredients, deleteIngredient }
 )(IngredientsScreen)

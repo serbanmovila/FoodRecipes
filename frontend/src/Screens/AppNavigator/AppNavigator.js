@@ -1,19 +1,18 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import AuthScreen from '../Auth/AuthScreen'
 import Dashboard from './../Dashboard/Dashboard'
+import { checkLogin } from './../Auth/Controllers/AuthActions'
 
-export default class AppNavigator extends React.Component {
+class AppNavigator extends React.Component {
     constructor(props) {
         super(props)
 
-        this.state = {
-            loggedIn: false,
-        }
+        this.state = {}
     }
 
     render() {
-        const { loggedIn } = this.state
-        const { screen } = this.props
+        const { screen, loggedIn } = this.props
 
         if (loggedIn) {
             return (
@@ -24,3 +23,5 @@ export default class AppNavigator extends React.Component {
         } else return <AuthScreen />
     }
 }
+
+export default connect((state) => ({ ...state }), {})(AppNavigator)

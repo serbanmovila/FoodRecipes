@@ -120,7 +120,7 @@ class AuthScreen extends React.Component {
             confirmPassword: '',
             validCPW: true,
             validPW: true,
-            validMail: true,
+            validMail: true
         }
     }
 
@@ -134,36 +134,67 @@ class AuthScreen extends React.Component {
 
     switchTab = () => {
         this.setState({
-            formType: this.state.formType === 'login' ? 'signup' : 'login',
+            formType: this.state.formType === 'login' ? 'signup' : 'login'
         })
     }
 
+    validatePasswords = () => {
+        if (this.state.formType === 'signup') {
+            this.setState({
+                validCPW: this.state.password === this.state.confirmPassword,
+                validPW: this.state.password === this.state.confirmPassword
+            })
+        } else
+            this.setState({
+                validCPW: true,
+                validPW: true
+            })
+    }
+
     updateValue = (type, content) => {
-        this.setState({
-            validCPW: this.state.password === this.state.confirmPassword,
-            validPW: this.state.password === this.state.confirmPassword,
-        })
         switch (type) {
             case 'pw':
-                this.setState({
-                    password: content,
-                })
+                this.setState(
+                    {
+                        password: content
+                    },
+                    this.validatePasswords
+                )
                 break
             case 'cpw':
-                this.setState({
-                    confirmPassword: content,
-                })
+                this.setState(
+                    {
+                        confirmPassword: content
+                    },
+                    this.validatePasswords
+                )
             case 'email':
                 this.setState({
-                    email: content,
+                    email: content
                 })
         }
     }
 
     signUp = () => {
         if (this.state.validCPW && this.state.validPW && this.state.validMail) {
-            console.log(this.props)
-            this.props.register(this.state)
+            this.props.register(
+                {
+                    username: this.state.email,
+                    password: this.state.password,
+                    email: this.state.email
+                },
+                this.props.login
+            )
+        }
+    }
+
+    signIn = () => {
+        console.log(this.state.validPW && this.state.validMail)
+        if (this.state.validPW && this.state.validMail) {
+            this.props.login({
+                username: this.state.email,
+                password: this.state.password
+            })
         }
     }
 
@@ -180,7 +211,7 @@ class AuthScreen extends React.Component {
                                     <Tab
                                         style={{
                                             borderRight:
-                                                '1px solid rgba(0,0,0,0.3)',
+                                                '1px solid rgba(0,0,0,0.3)'
                                         }}
                                         className={
                                             this.state.formType === 'login'
@@ -209,18 +240,31 @@ class AuthScreen extends React.Component {
                                                 id="outlined-basic"
                                                 label="Email"
                                                 variant="outlined"
+                                                onChange={(e) => {
+                                                    this.updateValue(
+                                                        'email',
+                                                        e.target.value
+                                                    )
+                                                }}
                                             />
                                             <TextField
                                                 id="outlined-basic"
                                                 label="Password"
                                                 variant="outlined"
+                                                onChange={(e) => {
+                                                    this.updateValue(
+                                                        'pw',
+                                                        e.target.value
+                                                    )
+                                                }}
                                             />
                                             <Button
                                                 variant="outlined"
                                                 size="large"
+                                                onClick={this.signIn}
                                                 style={{
                                                     width: '100%',
-                                                    marginTop: '30px',
+                                                    marginTop: '30px'
                                                 }}
                                             >
                                                 Log in
@@ -246,7 +290,7 @@ class AuthScreen extends React.Component {
                                                 type="password"
                                                 onChange={(e) => {
                                                     this.updateValue(
-                                                        'password',
+                                                        'pw',
                                                         e.target.value
                                                     )
                                                 }}
@@ -258,7 +302,7 @@ class AuthScreen extends React.Component {
                                                 type="password"
                                                 onChange={(e) => {
                                                     this.updateValue(
-                                                        'password',
+                                                        'cpw',
                                                         e.target.value
                                                     )
                                                 }}
@@ -268,7 +312,7 @@ class AuthScreen extends React.Component {
                                                 size="large"
                                                 style={{
                                                     width: '100%',
-                                                    marginTop: '30px',
+                                                    marginTop: '30px'
                                                 }}
                                                 onClick={this.signUp}
                                             >
@@ -302,7 +346,7 @@ class AuthScreen extends React.Component {
                             variant="contained"
                             style={{
                                 color: 'black',
-                                marginTop: '7%',
+                                marginTop: '7%'
                             }}
                             size="large"
                             onClick={() => {
@@ -318,4 +362,6 @@ class AuthScreen extends React.Component {
     }
 }
 
-export default connect((state) => ({}), { login, register })(AuthScreen)
+export default connect((state) => ({ ...state }), { login, register })(
+    AuthScreen
+)
