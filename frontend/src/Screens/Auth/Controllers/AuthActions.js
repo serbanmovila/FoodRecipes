@@ -3,8 +3,7 @@ import axios from 'axios'
 export const register = (data, cb) => (dispatch) => {
     axios({
         method: 'post',
-        mode: 'no-cors',
-        url: 'localhost:3001/register',
+        url: 'http://localhost:3001/register',
         data: {
             username: data.username,
             password: data.password,
