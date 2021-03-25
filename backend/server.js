@@ -11,7 +11,6 @@ const { ObjectID } = require("bson")
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
-app.options("*", cors())
 const secretKey = "secret-phrase-for-encryption-and-decryption"
 
 const dbName = "RecipesDB"
@@ -149,7 +148,7 @@ app.post("/login", async (req, res) => {
   if ((await dbManager.checkIfUserExist(usr, psd)) === true) {
     const claims = { iss: "login-claim", sub: "user-login" }
     const token = jwt.create(claims, secretKey)
-    token.setExpiration(new Date().getTime() + 1200 * 1000000)
+    token.setExpiration(new Date().getTime() + 1200 * 1000)
     let jwtToken = token.compact()
     await dbManager.updateAt(
       { username: usr, password: psd },
@@ -170,7 +169,6 @@ app.post("/ingredients", async (req, res) => {
     if (err) {
       res.status(405).send({ ans: "expired" })
     } else {
-      console.log(req.body)
       await dbManager.addIngredient(token, ingredient)
       res.status(200).send({ ans: "added" })
     }
@@ -192,7 +190,7 @@ app.get("/ingredients", async (req, res) => {
 
 app.get("/ingredients/:id", async (req, res) => {
   await dbManager.setUpConnection(dbName)
-  await dbManager.setCollection("Users")
+  await dbManager.setUpConnection("Users")
   const token = req.headers["authorization"].split(" ")[1]
   let { id } = req.params
   jwt.verify(token, secretKey, async (err, ver) => {
@@ -205,8 +203,6 @@ app.get("/ingredients/:id", async (req, res) => {
 })
 
 app.put(`/ingredients/:id`, async (req, res) => {
-  await dbManager.setUpConnection(dbName)
-  await dbManager.setCollection("Users")
   let { id } = req.params
   let token = req.headers["authorization"].split(" ")[1]
   jwt.verify(token, secretKey, async (err, ver) => {
@@ -220,8 +216,6 @@ app.put(`/ingredients/:id`, async (req, res) => {
 })
 
 app.delete("/ingredients/:id", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
-  await dbManager.setCollection("Users")
   let { id } = req.params
   let token = req.headers["authorization"].split(" ")[1]
   jwt.verify(token, secretKey, async (err, ver) => {
@@ -233,8 +227,6 @@ app.delete("/ingredients/:id", async (req, res) => {
     }
   })
 })
-
-app.options("*", cors())
 
 app.listen(port, () => {
   console.log(`Example app listening at https://localhost:${port}`)

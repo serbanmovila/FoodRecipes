@@ -93,8 +93,8 @@ exports.DatabaseHandler = () => {
       let user = await collection.findOne({ token: token })
       let ingredients = user.ingredients
       if (ingredients.length > 0) {
-        ingredient.id = ingredients[ingredients.length - 1].id + 1
-      } else ingredient.id = 1
+        ingredient.id = ingredients[ingredients.length - 1].id
+      }
       ingredients.push(ingredient)
       await collection.updateOne(
         { token: token },
@@ -115,12 +115,7 @@ exports.DatabaseHandler = () => {
     deleteIngredient: async (token, id) => {
       let user = await collection.findOne({ token: token })
       let ingredients = user.ingredients
-      let i
-      console.log(id)
-      for (i = 0; i < ingredients.length; i++)
-        if (ingredients[i].id == id) break
-      console.log(ingredients[0].id)
-      ingredients.splice(i, 1)
+      ingredients.splice(id - 1, 1)
       await collection.updateOne(
         { token: token },
         { $set: { ingredients: ingredients } }
