@@ -4,7 +4,7 @@ export const register = (data, cb) => (dispatch) => {
     axios({
         method: 'post',
         mode: 'no-cors',
-        url: 'localhost:3000/register',
+        url: 'localhost:3001/register',
         data: {
             username: data.username,
             password: data.password,
