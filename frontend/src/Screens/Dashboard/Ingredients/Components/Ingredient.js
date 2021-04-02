@@ -61,7 +61,7 @@ const Cell = styled.div`
     &.ingredient-qty,
     &.ingredient-unit,
     &.ingredient-price {
-        width: 15%;
+        width: 45%;
         justify-content: center;
     }
 `
@@ -72,9 +72,13 @@ export default function Ingredient(props) {
         <Row>
             <Cell className="ingredient-name">{name}</Cell>
             <Cell className="ingredient-qty">{qty}</Cell>
-            <Cell className="ingredient-unit">{unit}</Cell>
-            <Cell className="ingredient-price">{price}</Cell>
-            <IconButton aria-label="edit" className="edit-btn">
+            <IconButton
+                aria-label="edit"
+                className="edit-btn"
+                onClick={() => {
+                    props.editIngredient(props.data)
+                }}
+            >
                 <EditIcon />
             </IconButton>
             <IconButton

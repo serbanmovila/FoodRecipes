@@ -8,6 +8,7 @@ import Recipe from './Components/Recipe'
 import Modal from '../../../Helpers/Modal/Modal'
 import AddRecipeForm from './Components/AddRecipeForm'
 import { getRecipes } from './Controllers/RecipeActions'
+import { FormatListNumberedRtlRounded, ThreeSixty } from '@material-ui/icons'
 
 const RecipesListing = styled.div`
     display: flex;
@@ -44,7 +45,9 @@ class RecipesScreen extends React.Component {
         super(props)
 
         this.state = {
-            openModal: false
+            openModal: false,
+            recipeData: {},
+            preloaded: false
         }
     }
 
@@ -54,6 +57,7 @@ class RecipesScreen extends React.Component {
 
     close = () => {
         this.setState({
+            preloaded: false,
             openModal: false
         })
     }
@@ -62,6 +66,21 @@ class RecipesScreen extends React.Component {
         this.setState({
             openModal: true
         })
+    }
+
+    viewRecipe = (data) => {
+        console.log(data)
+        this.setState(
+            {
+                preloaded: true,
+                recipeData: data
+            },
+            () => {
+                this.setState({
+                    openModal: true
+                })
+            }
+        )
     }
 
     render() {
@@ -82,12 +101,23 @@ class RecipesScreen extends React.Component {
                     </Header>
                     <RecipesListing>
                         {recipes.map((recipe) => {
-                            return <Recipe data={recipe} />
+                            return (
+                                <Recipe
+                                    handleClick={() => {
+                                        this.viewRecipe(recipe)
+                                    }}
+                                    data={recipe}
+                                />
+                            )
                         })}
                     </RecipesListing>
                 </Container>
                 <Modal close={this.close} open={this.state.openModal}>
-                    <AddRecipeForm close={this.close} />
+                    <AddRecipeForm
+                        close={this.close}
+                        preloaded={this.state.preloaded}
+                        data={this.state.recipeData}
+                    />
                 </Modal>
             </>
         )

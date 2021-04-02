@@ -51,6 +51,12 @@ const TableContainer = styled.div`
     -moz-box-shadow: 2px 2px 30px 0px rgba(0, 0, 0, 0.1);
     box-shadow: 2px 2px 30px 0px rgba(0, 0, 0, 0.1);
     height: 80%;
+
+    @media only screen and (max-width: 600px) {
+        width: 100%;
+        height: auto;
+        margin-top: 6%;
+    }
 `
 
 class IngredientsScreen extends React.Component {
@@ -58,13 +64,15 @@ class IngredientsScreen extends React.Component {
         super(props)
 
         this.state = {
-            openModal: false
+            openModal: false,
+            preloaded: false
         }
     }
 
     close = () => {
         this.setState({
-            openModal: false
+            openModal: false,
+            preloaded: false
         })
     }
 
@@ -72,6 +80,20 @@ class IngredientsScreen extends React.Component {
         this.setState({
             openModal: true
         })
+    }
+
+    openIngredient = (data) => {
+        this.setState(
+            {
+                preloaded: true,
+                data: data
+            },
+            () => {
+                this.setState({
+                    openModal: true
+                })
+            }
+        )
     }
 
     deleteIngredient = (id) => {
@@ -107,6 +129,7 @@ class IngredientsScreen extends React.Component {
                                     <Ingredient
                                         data={ingredient}
                                         deleteIngredient={this.deleteIngredient}
+                                        editIngredient={this.openIngredient}
                                     />
                                 )
                             })}
@@ -114,7 +137,11 @@ class IngredientsScreen extends React.Component {
                     </TableContainer>
                 </Container>
                 <Modal close={this.close} open={this.state.openModal}>
-                    <AddIngredientForm close={this.close} />
+                    <AddIngredientForm
+                        close={this.close}
+                        preloaded={this.state.preloaded}
+                        data={this.state.data}
+                    />
                 </Modal>
             </>
         )

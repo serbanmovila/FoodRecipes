@@ -28,9 +28,20 @@ const FormContainer = styled.div`
 class AddIngredientForm extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {
-            unitType: ''
-        }
+        if (props.preloaded) {
+            console.log(props.data)
+            this.state = {
+                unitType: '',
+                id: props.data.id,
+                name: props.data.name,
+                qty: props.data.qty
+            }
+        } else
+            this.state = {
+                unitType: '',
+                name: '',
+                qty: 0
+            }
     }
 
     handleChange = (event) => {
@@ -72,6 +83,18 @@ class AddIngredientForm extends React.Component {
         )
     }
 
+    saveIngredient = () => {
+        this.props.updateIngredient(
+            this.state.id,
+            {
+                id: this.state.id,
+                name: this.state.name,
+                qty: this.state.qty
+            },
+            this.clearForm
+        )
+    }
+
     render() {
         return (
             <FormContainer>
@@ -79,6 +102,7 @@ class AddIngredientForm extends React.Component {
                     id="outlined-basic"
                     label="Name"
                     variant="outlined"
+                    value={this.state.name}
                     onChange={(e) => {
                         this.updateValue('name', e.target.value)
                     }}
@@ -87,18 +111,27 @@ class AddIngredientForm extends React.Component {
                     id="outlined-basic"
                     label="Quantity"
                     variant="outlined"
+                    value={this.state.qty}
                     onChange={(e) => {
                         this.updateValue('qty', e.target.value)
                     }}
                 />
-                <Button variant="outlined" onClick={this.sendIngredient}>
-                    Add Ingredient
-                </Button>
+                {!this.props.preloaded && (
+                    <Button variant="outlined" onClick={this.sendIngredient}>
+                        Add Ingredient
+                    </Button>
+                )}
+                {this.props.preloaded && (
+                    <Button variant="outlined" onClick={this.saveIngredient}>
+                        Save
+                    </Button>
+                )}
             </FormContainer>
         )
     }
 }
 export default connect((state) => ({ ...state }), {
     addIngredient,
-    getIngredients
+    getIngredients,
+    updateIngredient
 })(AddIngredientForm)

@@ -8,7 +8,12 @@ import {
     FormControl,
     InputLabel
 } from '@material-ui/core'
-import { addRecipe, getRecipes } from '../Controllers/RecipeActions'
+import {
+    addRecipe,
+    getRecipes,
+    saveRecipe,
+    deleteRecipe
+} from '../Controllers/RecipeActions'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
 
@@ -48,22 +53,42 @@ const FormContainer = styled.div`
 class AddRecipeForm extends React.Component {
     constructor(props) {
         super(props)
-        this.state = {
-            unitType: '',
-            ingredients: [],
-            qtys: [],
-            types: '',
-            name: '',
-            type: '',
-            preparare: '',
-            recomandare: ''
-        }
-    }
+        if (this.props.preloaded) {
+            let {
+                name,
+                preparare,
+                recomandari,
+                ingredients,
+                tipPreparat,
+                _id
+            } = this.props.data
 
-    handleChange = (event) => {
-        this.setState({
-            unitType: event.target.value
-        })
+            let names = []
+
+            ingredients.map((ingredient) => {
+                names.push(ingredient.name)
+            })
+
+            this.state = {
+                id: _id,
+                ingredients: names,
+                qtys: ingredients,
+                types: '',
+                name: name,
+                type: tipPreparat,
+                preparare: preparare,
+                recomandare: recomandari
+            }
+        } else
+            this.state = {
+                ingredients: [],
+                qtys: [],
+                types: '',
+                name: '',
+                type: '',
+                preparare: '',
+                recomandare: ''
+            }
     }
 
     updateValue = (type, content) => {
@@ -79,6 +104,7 @@ class AddRecipeForm extends React.Component {
                 })
                 break
             case 'type':
+                console.log(content)
                 this.setState({
                     type: content
                 })
@@ -118,20 +144,48 @@ class AddRecipeForm extends React.Component {
         )
     }
 
+    deleteRecipe = () => {
+        this.props.deleteRecipe(this.state.id, this.clearForm)
+    }
+
+    saveRecipe = () => {
+        this.props.saveRecipe(
+            this.state.id,
+            {
+                name: this.state.name,
+                ingredients: this.state.qtys,
+                preparare: this.state.preparare,
+                tipPreparat: this.state.type,
+                recomandari: this.state.recomandare
+            },
+            this.clearForm
+        )
+    }
+
     handleIngredientsChange = (e) => {
+        let newQtys = []
+
         e.target.value.forEach((ingredient) => {
             const obj = {
                 name: ingredient,
                 quantity: 1
             }
 
-            if (this.state.qtys.indexOf(obj) === -1)
-                this.setState({
-                    qtys: [...this.state.qtys, obj]
-                })
+            let found = 0
+
+            this.state.qtys.forEach((qty) => {
+                if (qty.name === ingredient) {
+                    newQtys.push(qty)
+                    found = 1
+                }
+            })
+
+            if (!found) newQtys.push(obj)
         })
+
         this.setState({
-            ingredients: e.target.value
+            ingredients: e.target.value,
+            qtys: newQtys
         })
     }
 
@@ -155,6 +209,7 @@ class AddRecipeForm extends React.Component {
                     id="outlined-basic"
                     label="Name"
                     variant="outlined"
+                    value={this.state.name}
                     onChange={(e) => {
                         this.updateValue('name', e.target.value)
                     }}
@@ -210,6 +265,10 @@ class AddRecipeForm extends React.Component {
                             variant="outlined"
                             placeholder="Quantity"
                             type="number"
+                            value={
+                                this.state.qtys[this.state.qtys.indexOf(qty)]
+                                    .quantity
+                            }
                             onChange={(e) => {
                                 this.updateIngredientQty(
                                     qty.quantity,
@@ -277,6 +336,7 @@ class AddRecipeForm extends React.Component {
                     id="outlined-basic"
                     label="Preparare"
                     variant="outlined"
+                    value={this.state.preparare}
                     onChange={(e) => {
                         this.updateValue('preparare', e.target.value)
                     }}
@@ -289,6 +349,7 @@ class AddRecipeForm extends React.Component {
                     id="outlined-basic"
                     label="Recomandari"
                     variant="outlined"
+                    value={this.state.recomandare}
                     onChange={(e) => {
                         this.updateValue('recomandare', e.target.value)
                     }}
@@ -297,14 +358,34 @@ class AddRecipeForm extends React.Component {
                     }}
                     multiline
                 />
-                <Button variant="outlined" onClick={this.sendRecipe}>
-                    Add Recipe
-                </Button>
+                {!this.props.preloaded && (
+                    <Button variant="outlined" onClick={this.sendRecipe}>
+                        Add Recipe
+                    </Button>
+                )}
+                {this.props.preloaded && (
+                    <>
+                        <Button variant="outlined" onClick={this.saveRecipe}>
+                            Save
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            style={{
+                                marginTop: '10px'
+                            }}
+                            onClick={this.deleteRecipe}
+                        >
+                            Delete
+                        </Button>
+                    </>
+                )}
             </FormContainer>
         )
     }
 }
 export default connect((state) => ({ ...state }), {
     addRecipe,
-    getRecipes
+    getRecipes,
+    saveRecipe,
+    deleteRecipe
 })(AddRecipeForm)

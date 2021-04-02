@@ -46,13 +46,15 @@ export const deleteIngredient = (id, cb) => (dispatch) => {
     )
 }
 
-export const updateIngredient = (id, cb) => (dispatch) => {
+export const updateIngredient = (id, data, cb) => (dispatch) => {
     axios({
         method: 'put',
-        url: `http://localhost:3001/ingredients/${id}`
+        url: `http://localhost:3001/ingredients/${id}`,
+        data: data
     }).then(
         (res) => {
             cb()
+            console.log(res)
         },
         (err) => {
             console.error(err)
