@@ -18,8 +18,9 @@ const dbName = "RecipesDB"
 //this block will be deleted in further iterations
 const dbManager = DatabaseHandler()
 
+dbManager.setUpConnection(dbName)
+
 app.get("/recipes", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
   await dbManager.setCollection("Recipes")
   let response = await dbManager.queryAll({})
   res.send(
@@ -30,7 +31,6 @@ app.get("/recipes", async (req, res) => {
 })
 
 app.get("/recipes", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
   await dbManager.setCollection("Recipes")
   let uriString = req.query.ingredients.split(";")
   let reqObject = {}
@@ -52,25 +52,24 @@ app.get("/recipes", async (req, res) => {
 })
 
 app.get("/recipes/:id", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
   await dbManager.setCollection("Recipes")
   res.send(await dbManager.query({ _id: ObjectID(req.params.id) }))
 })
 
 app.put("/recipes/:id", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
   await dbManager.setCollection("Recipes")
+  console.log(req.params.id)
+  console.log(JSON.stringify(req.body))
   res.send(await dbManager.updateAt({ _id: ObjectID(req.params.id) }, req.body))
 })
 
 app.delete("/recipes/:id", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
   await dbManager.setCollection("Recipes")
+  res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE")
   res.send(await dbManager.remove({ _id: ObjectID(req.params.id) }))
 })
 
 app.get("/myRecipes", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
   await dbManager.setCollection("Users")
   let token = req.headers["authorization"].split(" ")[1]
   let usr = await dbManager.getUser(token)
@@ -84,7 +83,6 @@ app.post("/recipes", async (req, res) => {
     if (err) {
       res.status(405).send({ ans: "expired" })
     } else {
-      await dbManager.setUpConnection(dbName)
       await dbManager.setCollection("Users")
       let usr = await dbManager.getUser(token)
       await dbManager.setCollection("Recipes")
@@ -102,7 +100,6 @@ app.post("/addrecipes", async (req, res) => {
     if (err) {
       res.status(405).send({ ans: "expired" })
     } else {
-      await dbManager.setUpConnection(dbName)
       await dbManager.setCollection("Users")
       let usr = await dbManager.getUser(token)
       await dbManager.setCollection("Recipes")
@@ -121,7 +118,6 @@ app.get("/recipesFilter/:tipPreparat", async (req, res) => {
     if (err) {
       res.status(405).send({ ans: "expired" })
     } else {
-      await dbManager.setUpConnection(dbName)
       await dbManager.setCollection("Recipes")
       let response = await dbManager.queryAll({})
       res.send(
@@ -134,7 +130,6 @@ app.get("/recipesFilter/:tipPreparat", async (req, res) => {
 })
 
 app.post("/register", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
   await dbManager.setCollection("Users")
   let data = req.body
   data.ingredients = []
@@ -142,7 +137,6 @@ app.post("/register", async (req, res) => {
 })
 
 app.post("/login", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
   await dbManager.setCollection("Users")
   let usr = req.body.username
   let psd = req.body.password
@@ -162,7 +156,6 @@ app.post("/login", async (req, res) => {
 })
 
 app.post("/ingredients", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
   await dbManager.setCollection("Users")
   let token = req.headers["authorization"].split(" ")[1]
   const { ingredient } = req.body
@@ -177,7 +170,6 @@ app.post("/ingredients", async (req, res) => {
 })
 
 app.get("/ingredients", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
   await dbManager.setCollection("Users")
   const token = req.headers["authorization"].split(" ")[1]
   jwt.verify(token, secretKey, async (err, ver) => {
@@ -190,8 +182,7 @@ app.get("/ingredients", async (req, res) => {
 })
 
 app.get("/ingredients/:id", async (req, res) => {
-  await dbManager.setUpConnection(dbName)
-  await dbManager.setUpConnection("Users")
+  await dbManager.setCollection("Users")
   const token = req.headers["authorization"].split(" ")[1]
   let { id } = req.params
   jwt.verify(token, secretKey, async (err, ver) => {
@@ -210,6 +201,8 @@ app.put(`/ingredients/:id`, async (req, res) => {
     if (err) {
       res.status(405).send({ ans: "expired" })
     } else {
+      console.log(req.body)
+      await dbManager.setCollection("Users")
       await dbManager.updateIngredient(token, id, req.body)
       res.send({ result: "updated" })
     }
@@ -223,6 +216,7 @@ app.delete("/ingredients/:id", async (req, res) => {
     if (err) {
       res.status(405).send({ ans: "expired" })
     } else {
+      await dbManager.setCollection("Users")
       await dbManager.deleteIngredient(token, id)
       res.send({ result: "deleted" })
     }

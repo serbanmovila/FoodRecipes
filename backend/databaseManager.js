@@ -93,8 +93,8 @@ exports.DatabaseHandler = () => {
       let user = await collection.findOne({ token: token })
       let ingredients = user.ingredients
       if (ingredients.length > 0) {
-        ingredient.id = ingredients[ingredients.length - 1].id
-      }
+        ingredient.id = ingredients[ingredients.length - 1].id + 1
+      } else ingredient.id = 0
       ingredients.push(ingredient)
       await collection.updateOne(
         { token: token },
@@ -105,7 +105,11 @@ exports.DatabaseHandler = () => {
     updateIngredient: async (token, id, obj) => {
       let user = await collection.findOne({ token: token })
       let ingredients = user.ingredients
-      ingredients.splice(id - 1, 1, obj)
+      for (let i = 0; i < ingredients.length; i++) {
+        console.log(`Comparing: ${ingredients[i].id} with ${id}`)
+        if (ingredients[i].id == id) ingredients[i] = obj
+      }
+      console.log(JSON.stringify(ingredients))
       await collection.updateOne(
         { token: token },
         { $set: { ingredients: ingredients } }
