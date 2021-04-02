@@ -14,7 +14,6 @@ export default class RecommendationsScreen extends React.Component {
     }
 
     pick = (type) => {
-        console.log(type)
         this.setState({
             phase: 2,
             type: type

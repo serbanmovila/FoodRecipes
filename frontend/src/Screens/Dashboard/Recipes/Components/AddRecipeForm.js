@@ -51,8 +51,10 @@ class AddRecipeForm extends React.Component {
         this.state = {
             unitType: '',
             ingredients: [],
+            qtys: [],
             types: '',
             name: '',
+            type: '',
             preparare: '',
             recomandare: ''
         }
@@ -90,26 +92,58 @@ class AddRecipeForm extends React.Component {
 
     clearForm = () => {
         this.setState({
+            unitType: '',
+            ingredients: [],
+            qtys: [],
+            types: '',
             name: '',
-            qty: ''
+            type: '',
+            preparare: '',
+            recomandare: ''
         })
-        this.props.getIngredients()
+        this.props.getRecipes()
         this.props.close()
     }
 
     sendRecipe = () => {
-        this.props.addIngredient(
+        this.props.addRecipe(
             {
                 name: this.state.name,
-                qty: this.state.qty
+                ingredients: this.state.qtys,
+                preparare: this.state.preparare,
+                tipPreparat: this.state.type,
+                recomandari: this.state.recomandare
             },
             this.clearForm
         )
     }
 
     handleIngredientsChange = (e) => {
+        e.target.value.forEach((ingredient) => {
+            const obj = {
+                name: ingredient,
+                quantity: 1
+            }
+
+            if (this.state.qtys.indexOf(obj) === -1)
+                this.setState({
+                    qtys: [...this.state.qtys, obj]
+                })
+        })
         this.setState({
             ingredients: e.target.value
+        })
+    }
+
+    updateIngredientQty = (ingredient, value) => {
+        let qtys = this.state.qtys
+
+        qtys.forEach((qty) => {
+            if (qty.name === ingredient) qty.quantity = value
+        })
+
+        this.setState({
+            qtys: qtys
         })
     }
 
@@ -168,6 +202,26 @@ class AddRecipeForm extends React.Component {
                         })}
                     </Select>
                 </FormControl>
+                {this.state.qtys.map((qty) => {
+                    return (
+                        <TextField
+                            id="outlined-basic"
+                            label={qty.name}
+                            variant="outlined"
+                            placeholder="Quantity"
+                            type="number"
+                            onChange={(e) => {
+                                this.updateIngredientQty(
+                                    qty.quantity,
+                                    e.target.value
+                                )
+                            }}
+                            style={{
+                                marginBottom: '20px'
+                            }}
+                        />
+                    )
+                })}
                 <FormControl variant="outlined">
                     <InputLabel id="demo-simple-select-outlined-label">
                         Recipe type
@@ -243,7 +297,7 @@ class AddRecipeForm extends React.Component {
                     }}
                     multiline
                 />
-                <Button variant="outlined" onClick={this.sendIngredient}>
+                <Button variant="outlined" onClick={this.sendRecipe}>
                     Add Recipe
                 </Button>
             </FormContainer>

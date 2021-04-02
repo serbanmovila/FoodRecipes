@@ -7,12 +7,14 @@ import { connect } from 'react-redux'
 import Recipe from './Components/Recipe'
 import Modal from '../../../Helpers/Modal/Modal'
 import AddRecipeForm from './Components/AddRecipeForm'
+import { getRecipes } from './Controllers/RecipeActions'
 
 const RecipesListing = styled.div`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     max-height: 80%;
+    width: 100%;
     overflow: auto;
     align-self: flex-end;
     /* width */
@@ -46,6 +48,10 @@ class RecipesScreen extends React.Component {
         }
     }
 
+    componentDidMount() {
+        this.props.getRecipes()
+    }
+
     close = () => {
         this.setState({
             openModal: false
@@ -59,6 +65,7 @@ class RecipesScreen extends React.Component {
     }
 
     render() {
+        const recipes = this.props.recipes
         return (
             <>
                 <Container>
@@ -74,7 +81,7 @@ class RecipesScreen extends React.Component {
                         </Button>
                     </Header>
                     <RecipesListing>
-                        {this.props.recipes.map((recipe) => {
+                        {recipes.map((recipe) => {
                             return <Recipe data={recipe} />
                         })}
                     </RecipesListing>
@@ -89,8 +96,7 @@ class RecipesScreen extends React.Component {
 
 export default connect(
     (state) => ({
-        recipes: state.recipes,
-        token: state.token
+        recipes: state.recipes
     }),
-    {}
+    { getRecipes }
 )(RecipesScreen)

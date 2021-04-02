@@ -35,21 +35,19 @@ export const login = (data) => (dispatch, state) => {
         }
     }).then(
         (res) => {
-            console.log(res)
             dispatch({
                 type: 'LOGGED_IN',
                 token: res.data.token
             })
         },
         (err) => {
-            console.log(err)
+            console.error(err)
         }
     )
 }
 
 export const checkLogin = () => (dispatch, state) => {
     let token = localStorage.getItem('token')
-    console.log(token)
     if (token) {
         dispatch({ type: 'IS_LOGGED' })
     }

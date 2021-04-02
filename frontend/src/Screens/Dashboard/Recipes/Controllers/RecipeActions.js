@@ -6,14 +6,13 @@ export const getRecipes = () => (dispatch) => {
         url: 'http://localhost:3001/recipes'
     }).then(
         (res) => {
-            console.log(res)
             dispatch({
                 type: 'GET_RECIPES',
-                recipes: res.data.recipes
+                payload: res.data
             })
         },
         (err) => {
-            console.log(err)
+            console.error(err)
         }
     )
 }
@@ -22,13 +21,13 @@ export const addRecipe = (data, cb) => (dispatch) => {
     axios({
         method: 'post',
         url: 'http://localhost:3001/recipes',
-        data: { data }
+        data: data
     }).then(
         (res) => {
             cb()
         },
         (err) => {
-            console.log(err)
+            console.error(err)
         }
     )
 }

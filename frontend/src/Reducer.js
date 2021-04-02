@@ -20,14 +20,16 @@ const Reducer = function (state = INITIAL_STATE, action) {
                 ...state,
                 loggedIn: true,
                 jwt: action.token,
-                ingredients: []
+                ingredients: [],
+                recipes: []
             }
         case 'IS_LOGGED':
             return {
                 ...state,
                 loggedIn: true,
                 jwt: action.token,
-                ingredients: []
+                ingredients: [],
+                recipes: []
             }
         default:
             return state
