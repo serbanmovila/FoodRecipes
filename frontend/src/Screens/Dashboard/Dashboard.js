@@ -44,8 +44,6 @@ export default class Dashboard extends React.Component {
     render() {
         const { screen } = this.state
 
-        console.log(`From dashboard: ${this.state.screen}`)
-
         return (
             <DashContainer>
                 <Navigation

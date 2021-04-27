@@ -54,7 +54,6 @@ export const updateIngredient = (id, data, cb) => (dispatch) => {
     }).then(
         (res) => {
             cb()
-            console.log(res)
         },
         (err) => {
             console.error(err)

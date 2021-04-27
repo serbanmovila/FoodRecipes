@@ -38,7 +38,6 @@ export const deleteRecipe = (id, cb) => (dispatch) => {
         url: `http://localhost:3001/recipes/${id}`
     }).then(
         (res) => {
-            console.log('res')
             cb()
         },
         (err) => {
@@ -48,7 +47,6 @@ export const deleteRecipe = (id, cb) => (dispatch) => {
 }
 
 export const saveRecipe = (id, data, cb) => (dispatch) => {
-    console.log(`http://localhost:3001/recipes/${id}`)
     axios({
         method: 'put',
         url: `http://localhost:3001/recipes/${id}`,

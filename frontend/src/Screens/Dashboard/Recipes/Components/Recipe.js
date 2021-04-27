@@ -66,11 +66,15 @@ export default function Recipe(props) {
     const { handleClick } = props
 
     return (
-        <Box onClick={props.handleClick}>
+        <Box onClick={props.handleClick} style={props.scoring ? {
+            width: "100%"
+        } : {}}>
             <BoxHeader>
                 <p>{name}</p>
             </BoxHeader>
-            <BoxContent>
+            <BoxContent style={props.highlight == true ? {
+                background: "#7D83B5"
+            } : {}}>
                 <InfoSection>
                     <TimerIcon />
                     <p className="label">TIME TO COOK</p>

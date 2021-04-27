@@ -69,7 +69,6 @@ class RecipesScreen extends React.Component {
     }
 
     viewRecipe = (data) => {
-        console.log(data)
         this.setState(
             {
                 preloaded: true,

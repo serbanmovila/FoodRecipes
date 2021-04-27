@@ -58,8 +58,6 @@ app.get("/recipes/:id", async (req, res) => {
 
 app.put("/recipes/:id", async (req, res) => {
   await dbManager.setCollection("Recipes")
-  console.log(req.params.id)
-  console.log(JSON.stringify(req.body))
   res.send(await dbManager.updateAt({ _id: ObjectID(req.params.id) }, req.body))
 })
 
@@ -78,7 +76,6 @@ app.get("/myRecipes", async (req, res) => {
 
 app.post("/recipes", async (req, res) => {
   let token = req.headers["authorization"].split(" ")[1]
-  console.log(token)
   jwt.verify(token, secretKey, async (err, ver) => {
     if (err) {
       res.status(405).send({ ans: "expired" })
@@ -201,7 +198,6 @@ app.put(`/ingredients/:id`, async (req, res) => {
     if (err) {
       res.status(405).send({ ans: "expired" })
     } else {
-      console.log(req.body)
       await dbManager.setCollection("Users")
       await dbManager.updateIngredient(token, id, req.body)
       res.send({ result: "updated" })

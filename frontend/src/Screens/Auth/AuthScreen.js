@@ -189,7 +189,6 @@ class AuthScreen extends React.Component {
     }
 
     signIn = () => {
-        console.log(this.state.validPW && this.state.validMail)
         if (this.state.validPW && this.state.validMail) {
             this.props.login({
                 username: this.state.email,

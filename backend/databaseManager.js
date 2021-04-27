@@ -38,7 +38,6 @@ exports.DatabaseHandler = () => {
 
     recipesQueryBy: async (reqObj, obj) => {
       let data = await collection.find(reqObj).toArray()
-      console.log(data)
       let result = []
       for (let i of data) {
         let nr = 0
@@ -84,7 +83,6 @@ exports.DatabaseHandler = () => {
     },
 
     getUser: async (token) => {
-      console.log(token)
       let user = await collection.findOne({ token: token })
       return user
     },
@@ -106,10 +104,8 @@ exports.DatabaseHandler = () => {
       let user = await collection.findOne({ token: token })
       let ingredients = user.ingredients
       for (let i = 0; i < ingredients.length; i++) {
-        console.log(`Comparing: ${ingredients[i].id} with ${id}`)
         if (ingredients[i].id == id) ingredients[i] = obj
       }
-      console.log(JSON.stringify(ingredients))
       await collection.updateOne(
         { token: token },
         { $set: { ingredients: ingredients } }

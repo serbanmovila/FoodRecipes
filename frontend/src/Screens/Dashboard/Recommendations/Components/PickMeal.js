@@ -56,10 +56,10 @@ export default function PickMeal(props) {
             </ChoiceBox>
             <ChoiceBox
                 onClick={() => {
-                    props.pick('supa')
+                    props.pick('desert')
                 }}
             >
-                <p>Supa</p>
+                <p>Desert</p>
             </ChoiceBox>
         </ChoiceContainer>
     )

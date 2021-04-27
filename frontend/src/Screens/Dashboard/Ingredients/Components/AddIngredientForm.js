@@ -29,7 +29,6 @@ class AddIngredientForm extends React.Component {
     constructor(props) {
         super(props)
         if (props.preloaded) {
-            console.log(props.data)
             this.state = {
                 unitType: '',
                 id: props.data.id,

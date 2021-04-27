@@ -104,7 +104,6 @@ class AddRecipeForm extends React.Component {
                 })
                 break
             case 'type':
-                console.log(content)
                 this.setState({
                     type: content
                 })
