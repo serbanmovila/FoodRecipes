@@ -8,6 +8,7 @@ import ScoreRecipes from './Components/ScoreRecipes'
 import Modal from '../../../Helpers/Modal/Modal'
 import styled from 'styled-components'
 import Recipe from '../Recipes/Components/Recipe'
+import { getRecipes } from '../Recipes/Controllers/RecipeActions'
 
 const InnerModal = styled.div`
     display: flex;
@@ -61,6 +62,10 @@ class RecommendationsScreen extends React.Component {
         })
     }
 
+    componentDidMount() {
+        this.props.getRecipes()
+    }
+
     render() {
         const { phase } = this.state
 
@@ -111,5 +116,5 @@ export default connect(
     (state) => ({
         recipes: state.recipes
     }),
-    {}
+    { getRecipes }
 )(RecommendationsScreen)

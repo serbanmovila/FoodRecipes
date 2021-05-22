@@ -60,8 +60,11 @@ class AddRecipeForm extends React.Component {
                 recomandari,
                 ingredients,
                 tipPreparat,
+                price,
                 _id
             } = this.props.data
+
+            console.log(this.props.data)
 
             let names = []
 
@@ -77,6 +80,7 @@ class AddRecipeForm extends React.Component {
                 name: name,
                 type: tipPreparat,
                 preparare: preparare,
+                price: price,
                 recomandare: recomandari
             }
         } else
@@ -86,6 +90,7 @@ class AddRecipeForm extends React.Component {
                 types: '',
                 name: '',
                 type: '',
+                price: 0,
                 preparare: '',
                 recomandare: ''
             }
@@ -124,7 +129,8 @@ class AddRecipeForm extends React.Component {
             name: '',
             type: '',
             preparare: '',
-            recomandare: ''
+            recomandare: '',
+            price: 0
         })
         this.props.getRecipes()
         this.props.close()
@@ -137,7 +143,8 @@ class AddRecipeForm extends React.Component {
                 ingredients: this.state.qtys,
                 preparare: this.state.preparare,
                 tipPreparat: this.state.type,
-                recomandari: this.state.recomandare
+                recomandari: this.state.recomandare,
+                price: this.state.price
             },
             this.clearForm
         )
@@ -155,7 +162,8 @@ class AddRecipeForm extends React.Component {
                 ingredients: this.state.qtys,
                 preparare: this.state.preparare,
                 tipPreparat: this.state.type,
-                recomandari: this.state.recomandare
+                recomandari: this.state.recomandare,
+                price: this.state.price
             },
             this.clearForm
         )
@@ -327,6 +335,22 @@ class AddRecipeForm extends React.Component {
                         </MenuItem>
                     </Select>
                 </FormControl>
+                <TextField
+                    id="outlined-basic"
+                    label="Price"
+                    variant="outlined"
+                    placeholder="Price"
+                    type="number"
+                    value={this.state.price}
+                    onChange={(e) => {
+                        this.setState({
+                            price: e.target.value
+                        })
+                    }}
+                    style={{
+                        marginBottom: '20px'
+                    }}
+                />
                 <TextField
                     id="outlined-basic"
                     label="Preparare"
