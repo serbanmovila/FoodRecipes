@@ -264,10 +264,6 @@ class AddRecipeForm extends React.Component {
                             variant="outlined"
                             placeholder="Quantity"
                             type="number"
-                            value={
-                                this.state.qtys[this.state.qtys.indexOf(qty)]
-                                    .quantity
-                            }
                             onChange={(e) => {
                                 this.updateIngredientQty(
                                     qty.quantity,
