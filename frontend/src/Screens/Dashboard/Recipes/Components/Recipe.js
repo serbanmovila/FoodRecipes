@@ -65,6 +65,8 @@ export default function Recipe(props) {
     const { name, time, difficulty, price } = props.data
     const { handleClick } = props
 
+    console.log(props.data, props.fromModal)
+
     return (
         <Box onClick={props.handleClick} style={props.scoring ? {
             width: "100%"

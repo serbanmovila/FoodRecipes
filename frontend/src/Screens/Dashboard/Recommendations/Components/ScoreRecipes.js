@@ -47,7 +47,7 @@ const ChoiceContainer = styled.div`
 export default function ScoreRecipes(props) {
     return (
         <RecipesListing>
-            {props.selected.map((recipe) => {
+            {props.selected.map((recipe, index) => {
                 return (
                     <ChoiceContainer>
                         <Recipe
@@ -63,6 +63,7 @@ export default function ScoreRecipes(props) {
                             min={0}
                             max={100}
                             valueLabelDisplay="auto"
+                            onChange={(e, value) => {props.onChange(value, index)}}
                         />
                     </ChoiceContainer>
                 )
