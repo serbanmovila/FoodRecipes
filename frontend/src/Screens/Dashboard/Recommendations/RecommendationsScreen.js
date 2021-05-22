@@ -27,6 +27,7 @@ class RecommendationsScreen extends React.Component {
         this.state = {
             phase: 1,
             selected: [],
+            maxPrice: 15,
         }
     }
 
@@ -98,6 +99,21 @@ class RecommendationsScreen extends React.Component {
                     constraint: '<=',
                     constant: 1
                 },
+                {
+                    namedVector: { a: parseInt(selected[0].price), b: 0, c: 0 },
+                    constraint: '<=',
+                    constant: this.state.maxPrice
+                },
+                {
+                    namedVector: { a: 0, b: parseInt(selected[1].price), c: 0 },
+                    constraint: '<=',
+                    constant: this.state.maxPrice
+                },
+                {
+                    namedVector: { a: 0, b: 0, c: parseInt(selected[2].price) },
+                    constraint: '<=',
+                    constant: this.state.maxPrice
+                },
             ],
             optimizationType: 'max'
         })
@@ -106,13 +122,19 @@ class RecommendationsScreen extends React.Component {
             methodName: 'simplex'
         })
 
+        let maxCoef = 0
+        let coefIndex = null
         for(const coefficient in result.solution.coefficients) {
             if(result.solution.coefficients[coefficient] !== 0 && result.solution.coefficients[coefficient]) {
-                this.setState({
-                    recommendation: this.state.selected[coefficient.charCodeAt(0) - 'a'.charCodeAt(0)]
-                })
+                if(result.solution.coefficients[coefficient] > maxCoef) {
+                    maxCoef = result.solution.coefficients[coefficient]
+                    coefIndex = coefficient.charCodeAt(0) - 'a'.charCodeAt(0)
+                }
             }
         }
+        this.setState({
+            recommendation: this.state.selected[coefIndex]
+        })
     }
 
     scoreChange = (value, index) => {
