@@ -62,23 +62,36 @@ const InfoSection = styled.div`
 `
 
 export default function Recipe(props) {
-    const { name, time, difficulty, price } = props.data
+    const { name, preparationTime, difficulty, price } = props.data
     const { handleClick } = props
 
     return (
-        <Box onClick={props.handleClick} style={props.scoring ? {
-            width: "100%"
-        } : {}}>
+        <Box
+            onClick={props.handleClick}
+            style={
+                props.scoring
+                    ? {
+                          width: '100%'
+                      }
+                    : {}
+            }
+        >
             <BoxHeader>
                 <p>{name}</p>
             </BoxHeader>
-            <BoxContent style={props.highlight == true ? {
-                background: "#7D83B5"
-            } : {}}>
+            <BoxContent
+                style={
+                    props.highlight == true
+                        ? {
+                              background: '#7D83B5'
+                          }
+                        : {}
+                }
+            >
                 <InfoSection>
                     <TimerIcon />
                     <p className="label">TIME TO COOK</p>
-                    <p className="info">{time}</p>
+                    <p className="info">{preparationTime} mins.</p>
                 </InfoSection>
                 <InfoSection>
                     <LocalOfferIcon />
