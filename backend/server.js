@@ -142,7 +142,9 @@ app.post("/login", async (req, res) => {
   if ((await dbManager.checkIfUserExist(usr, psd)) === true) {
     const claims = { iss: "login-claim", sub: "user-login" };
     const token = jwt.create(claims, secretKey);
-    token.setExpiration(new Date().getTime() + 1200 * 1000);
+    const expDate = new Date();
+    expDate.setDate(expDate.getDate() + 7);
+    token.setExpiration(expDate);
     let jwtToken = token.compact();
     await dbManager.updateAt(
       { username: usr, password: psd },
