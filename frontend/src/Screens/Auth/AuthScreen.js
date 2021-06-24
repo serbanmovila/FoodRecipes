@@ -154,29 +154,40 @@ class AuthScreen extends React.Component {
     updateValue = (type, content) => {
         switch (type) {
             case 'pw':
-                this.setState(
-                    {
-                        password: content
-                    },
-                    this.validatePasswords
-                )
+                {
+                    this.setState(
+                        {
+                            password: content
+                        },
+                        this.validatePasswords
+                    )
+                }
                 break
             case 'cpw':
-                this.setState(
-                    {
-                        confirmPassword: content
-                    },
-                    this.validatePasswords
-                )
-            case 'email':
+                {
+                    this.setState(
+                        {
+                            confirmPassword: content
+                        },
+                        this.validatePasswords
+                    )
+                }
+                break
+            case 'email': {
                 this.setState({
                     email: content
                 })
+            }
         }
     }
 
     signUp = () => {
         if (this.state.validCPW && this.state.validPW && this.state.validMail) {
+            console.log({
+                username: this.state.email,
+                password: this.state.password,
+                email: this.state.email
+            })
             this.props.register(
                 {
                     username: this.state.email,
