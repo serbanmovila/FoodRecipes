@@ -249,6 +249,7 @@ class AuthScreen extends React.Component {
                                             <TextField
                                                 id="outlined-basic"
                                                 label="Password"
+                                                type="password"
                                                 variant="outlined"
                                                 onChange={(e) => {
                                                     this.updateValue(

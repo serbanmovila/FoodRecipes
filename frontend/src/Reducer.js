@@ -15,7 +15,7 @@ const Reducer = function (state = INITIAL_STATE, action) {
         case 'GET_RECIPES':
             return { ...state, recipes: action.payload }
         case 'LOGGED_IN':
-            localStorage.setItem('token', action.token)
+            sessionStorage.setItem('token', action.token)
             return {
                 ...state,
                 loggedIn: true,
