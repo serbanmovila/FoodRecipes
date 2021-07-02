@@ -65,10 +65,6 @@ class AddRecipeForm extends React.Component {
                 _id
             } = this.props.data
 
-            console.log(this.props.data)
-
-            console.log(preparationTime)
-
             let names = []
 
             ingredients.map((ingredient) => {
@@ -212,9 +208,14 @@ class AddRecipeForm extends React.Component {
     updateIngredientQty = (ingredient, value) => {
         let qtys = this.state.qtys
 
-        qtys.forEach((qty) => {
-            if (qty.name === ingredient) qty.quantity = value
-        })
+        console.log(ingredient)
+
+        for (let i = 0; i < qtys.length; i++) {
+            if (qtys[i].name === ingredient) {
+                console.log('name')
+                qtys[i].quantity = value
+            }
+        }
 
         this.setState({
             qtys: qtys
@@ -298,10 +299,11 @@ class AddRecipeForm extends React.Component {
                             label={qty.name}
                             variant="outlined"
                             placeholder="Quantity"
+                            value={qty.quantity}
                             type="number"
                             onChange={(e) => {
                                 this.updateIngredientQty(
-                                    qty.quantity,
+                                    qty.name,
                                     e.target.value
                                 )
                             }}
