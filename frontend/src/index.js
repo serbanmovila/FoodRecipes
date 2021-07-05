@@ -12,9 +12,9 @@ import axios from 'axios'
 axios.interceptors.request.use(
     (request) => {
         request.headers.common['Authorization'] =
-            'Bearer ' + localStorage.getItem('token')
+            'Bearer ' + sessionStorage.getItem('token')
         request.headers['Authorization'] =
-            'Bearer ' + localStorage.getItem('token')
+            'Bearer ' + sessionStorage.getItem('token')
         return request
     },
     (error) => {

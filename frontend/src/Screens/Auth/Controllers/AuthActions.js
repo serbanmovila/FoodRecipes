@@ -35,6 +35,7 @@ export const login = (data) => (dispatch, state) => {
         }
     }).then(
         (res) => {
+            console.log(res)
             dispatch({
                 type: 'LOGGED_IN',
                 token: res.data.token
@@ -47,7 +48,7 @@ export const login = (data) => (dispatch, state) => {
 }
 
 export const checkLogin = () => (dispatch, state) => {
-    let token = localStorage.getItem('token')
+    let token = sessionStorage.getItem('token')
     if (token) {
         dispatch({ type: 'IS_LOGGED' })
     }

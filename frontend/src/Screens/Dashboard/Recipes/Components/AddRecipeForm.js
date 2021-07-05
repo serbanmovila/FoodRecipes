@@ -61,10 +61,9 @@ class AddRecipeForm extends React.Component {
                 ingredients,
                 tipPreparat,
                 price,
+                preparationTime,
                 _id
             } = this.props.data
-
-            console.log(this.props.data)
 
             let names = []
 
@@ -81,8 +80,11 @@ class AddRecipeForm extends React.Component {
                 type: tipPreparat,
                 preparare: preparare,
                 price: price,
-                recomandare: recomandari
+                recomandare: recomandari,
+                preparationTime: preparationTime
             }
+
+            console.log(this.state)
         } else
             this.state = {
                 ingredients: [],
@@ -92,12 +94,18 @@ class AddRecipeForm extends React.Component {
                 type: '',
                 price: 0,
                 preparare: '',
-                recomandare: ''
+                recomandare: '',
+                preparationTime: ''
             }
     }
 
     updateValue = (type, content) => {
         switch (type) {
+            case 'preparationTime':
+                this.setState({
+                    preparationTime: content
+                })
+                break
             case 'name':
                 this.setState({
                     name: content
@@ -144,7 +152,8 @@ class AddRecipeForm extends React.Component {
                 preparare: this.state.preparare,
                 tipPreparat: this.state.type,
                 recomandari: this.state.recomandare,
-                price: this.state.price
+                price: this.state.price,
+                preparationTime: this.state.preparationTime
             },
             this.clearForm
         )
@@ -199,9 +208,14 @@ class AddRecipeForm extends React.Component {
     updateIngredientQty = (ingredient, value) => {
         let qtys = this.state.qtys
 
-        qtys.forEach((qty) => {
-            if (qty.name === ingredient) qty.quantity = value
-        })
+        console.log(ingredient)
+
+        for (let i = 0; i < qtys.length; i++) {
+            if (qtys[i].name === ingredient) {
+                console.log('name')
+                qtys[i].quantity = value
+            }
+        }
 
         this.setState({
             qtys: qtys
@@ -264,6 +278,20 @@ class AddRecipeForm extends React.Component {
                         })}
                     </Select>
                 </FormControl>
+                <TextField
+                    id="outlined-basic"
+                    variant="outlined"
+                    label="Preparation time (in minutes)"
+                    placeholder="60"
+                    type="number"
+                    value={this.state.preparationTime}
+                    onChange={(e) => {
+                        this.updateValue('preparationTime', e.target.value)
+                    }}
+                    style={{
+                        marginBottom: '20px'
+                    }}
+                />
                 {this.state.qtys.map((qty) => {
                     return (
                         <TextField
@@ -271,10 +299,11 @@ class AddRecipeForm extends React.Component {
                             label={qty.name}
                             variant="outlined"
                             placeholder="Quantity"
+                            value={qty.quantity}
                             type="number"
                             onChange={(e) => {
                                 this.updateIngredientQty(
-                                    qty.quantity,
+                                    qty.name,
                                     e.target.value
                                 )
                             }}
