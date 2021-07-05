@@ -26,8 +26,13 @@ class RecommendationsScreen extends React.Component {
 
         this.state = {
             phase: 1,
-            selected: []
+            selected: [],
+            maxPrice: 15,
         }
+    }
+
+    componentDidMount() {
+        this.props.getRecipes()
     }
 
     pick = (type) => {
@@ -38,6 +43,9 @@ class RecommendationsScreen extends React.Component {
     }
 
     setSelection = (recipes) => {
+        recipes.forEach(recipe => {
+            recipe.score = 50
+        })
         this.setState({
             selected: recipes
         })
@@ -58,12 +66,84 @@ class RecommendationsScreen extends React.Component {
     submit = () => {
         this.setState({
             modal: true,
-            recommendation: this.props.recipes[0]
         })
     }
 
-    componentDidMount() {
-        this.props.getRecipes()
+    solveSimplex = (selected) => {
+        const SimpleSimplex = require('simple-simplex')
+
+        const solver = new SimpleSimplex({
+            objective: {
+                a: selected[0].score,
+                b: selected[1].score,
+                c: selected[2].score
+            },
+            constraints: [
+                {
+                    namedVector: { a: 1, b: 1, c: 1 },
+                    constraint: '<=',
+                    constant: 1
+                },
+                {
+                    namedVector: { a: 1, b: 0, c: 0 },
+                    constraint: '<=',
+                    constant: 1
+                },
+                {
+                    namedVector: { a: 0, b: 1, c: 0 },
+                    constraint: '<=',
+                    constant: 1
+                },
+                {
+                    namedVector: { a: 0, b: 0, c: 1 },
+                    constraint: '<=',
+                    constant: 1
+                },
+                {
+                    namedVector: { a: parseInt(selected[0].price), b: 0, c: 0 },
+                    constraint: '<=',
+                    constant: this.state.maxPrice
+                },
+                {
+                    namedVector: { a: 0, b: parseInt(selected[1].price), c: 0 },
+                    constraint: '<=',
+                    constant: this.state.maxPrice
+                },
+                {
+                    namedVector: { a: 0, b: 0, c: parseInt(selected[2].price) },
+                    constraint: '<=',
+                    constant: this.state.maxPrice
+                },
+            ],
+            optimizationType: 'max'
+        })
+
+        const result = solver.solve({
+            methodName: 'simplex'
+        })
+
+        let maxCoef = 0
+        let coefIndex = null
+        for(const coefficient in result.solution.coefficients) {
+            if(result.solution.coefficients[coefficient] !== 0 && result.solution.coefficients[coefficient]) {
+                if(result.solution.coefficients[coefficient] > maxCoef) {
+                    maxCoef = result.solution.coefficients[coefficient]
+                    coefIndex = coefficient.charCodeAt(0) - 'a'.charCodeAt(0)
+                }
+            }
+        }
+        this.setState({
+            recommendation: this.state.selected[coefIndex]
+        })
+    }
+
+    scoreChange = (value, index) => {
+        let newSelected = this.state.selected
+        newSelected[index].score = value
+        this.setState({
+            selected: newSelected
+        })
+        this.solveSimplex(newSelected)
     }
 
     render() {
@@ -77,9 +157,9 @@ class RecommendationsScreen extends React.Component {
                         <p>
                             {phase === 1 && 'Step 1: Pick a meal'}
                             {phase === 2 &&
-                                'Step 2: Select three different recipes'}
+                            'Step 2: Select three different recipes'}
                             {phase === 3 &&
-                                'Step 3: Give each of them a score from 1 to 100'}
+                            'Step 3: Give each of them a score from 1 to 100'}
                         </p>
                     </HeaderContent>
                     {phase === 2 && this.state.selected.length === 3 && (
@@ -96,7 +176,11 @@ class RecommendationsScreen extends React.Component {
                         setSelection={this.setSelection}
                     />
                 )}
-                {phase === 3 && <ScoreRecipes selected={this.state.selected} />}
+                {phase === 3 &&
+                <ScoreRecipes
+                    selected={this.state.selected}
+                    onChange={this.scoreChange}
+                />}
                 <Modal close={this.close} open={this.state.modal}>
                     <InnerModal>
                         <h3>Your best recipe is:</h3>
