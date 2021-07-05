@@ -83,8 +83,6 @@ class AddRecipeForm extends React.Component {
                 recomandare: recomandari,
                 preparationTime: preparationTime
             }
-
-            console.log(this.state)
         } else
             this.state = {
                 ingredients: [],
@@ -208,11 +206,8 @@ class AddRecipeForm extends React.Component {
     updateIngredientQty = (ingredient, value) => {
         let qtys = this.state.qtys
 
-        console.log(ingredient)
-
         for (let i = 0; i < qtys.length; i++) {
             if (qtys[i].name === ingredient) {
-                console.log('name')
                 qtys[i].quantity = value
             }
         }

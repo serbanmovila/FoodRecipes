@@ -131,7 +131,6 @@ app.get("/recipesFilter/:tipPreparat", async (req, res) => {
 app.post("/register", async (req, res) => {
   await dbManager.setCollection("Users");
   let data = req.body;
-  console.log(req.body);
   data.ingredients = [];
   res.send(await dbManager.insertObject(data));
 });

@@ -35,7 +35,6 @@ export const login = (data) => (dispatch, state) => {
         }
     }).then(
         (res) => {
-            console.log(res)
             dispatch({
                 type: 'LOGGED_IN',
                 token: res.data.token
